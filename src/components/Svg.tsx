@@ -1,0 +1,56 @@
+import React, { FC, useContext, useEffect } from 'react'
+
+import { SvgContext } from '../utils/SvgContext'
+import { SvgObj, SvgsObj } from '../utils/types'
+import { GetSvgId } from '../utils/getSvgIdGenerator'
+
+import { SvgGroupInterface } from '../components/SvgGroup'
+import { SvgImage } from './SvgImage'
+
+interface SvgProps {
+	type: 'external' | 'link' | 'inline'
+	svg: string
+	[x: string]: any
+}
+
+export type Svg = FC<SvgProps>
+
+const formatViewbox = ({ x, y, width, height }: SvgObj) =>
+	[x, y, width, height].join(' ')
+
+export const svgGenerator = (
+	svgs: SvgsObj,
+	SvgGroup: SvgGroupInterface,
+	getSvgId: GetSvgId,
+): Svg => {
+	const useSvgLink = (svg: string) => {
+		const linkSvg = useContext(SvgContext)
+
+		useEffect(() => {
+			if (svg === '' || !svgs[svg]) return
+			linkSvg(svg)
+		}, [linkSvg, svg])
+	}
+
+	return ({ type = 'link', svg, ...rest }) => {
+		useSvgLink(type === 'link' ? svg : '')
+
+		const svgData = svgs[svg]
+
+		if (!svgData) return null
+
+		if (type === 'external') return <SvgImage {...rest} svgData={svgData} />
+
+		return (
+			<svg {...rest} viewBox={formatViewbox(svgData)} xmlSpace="preserve">
+				{svgData.alt && <title>{svgData.alt}</title>}
+
+				{type === 'inline' ? (
+					<SvgGroup svg={svg} />
+				) : (
+					<use x="0" y="0" xlinkHref={`#${getSvgId(svg)}`} />
+				)}
+			</svg>
+		)
+	}
+}

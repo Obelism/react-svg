@@ -1,11 +1,11 @@
 import React, { FC } from 'react'
 import useSWR from 'swr'
 
-import { IconDispatchType } from '../utils/IconContext'
-import { IconsObj } from '../utils/types'
+import { SvgDispatchType } from '../utils/SvgContext'
+import { SvgsObj } from '../utils/types'
 
-interface IconGroupProps {
-	icon: IconDispatchType
+interface SvgGroupProps {
+	svg: SvgDispatchType
 	[x: string]: any
 }
 
@@ -20,12 +20,12 @@ const fetcher = async (path: string) => {
 	return await res.text()
 }
 
-export type IconGroupInterface = FC<IconGroupProps>
+export type SvgGroupInterface = FC<SvgGroupProps>
 
-export const iconGroupGenerator =
-	(icons: IconsObj): IconGroupInterface =>
-	({ icon, ...rest }) => {
-		const { data, error } = useSWR(icons[icon].path, fetcher, SWRConfig)
+export const svgGroupGenerator =
+	(svgs: SvgsObj): SvgGroupInterface =>
+	({ svg, ...rest }) => {
+		const { data, error } = useSWR(svgs[svg].path, fetcher, SWRConfig)
 
 		if (!data || error) return null
 

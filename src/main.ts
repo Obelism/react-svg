@@ -1,30 +1,30 @@
-import { Icon, iconGenerator } from './components/Icon'
-import { iconGroupGenerator } from './components/IconGroup'
-import { IconProvider, iconProviderGenerator } from './components/IconProvider'
-import { IconsObj } from './utils/types'
+import { Svg, svgGenerator } from './components/Svg'
+import { svgGroupGenerator } from './components/SvgGroup'
+import { SvgProvider, svgProviderGenerator } from './components/SvgProvider'
+import { SvgsObj } from './utils/types'
 import { getSvgIdGenerator } from './utils/getSvgIdGenerator'
 
-interface SetupReactIconArgs {
-	icons: IconsObj
+interface setupReactSvgArgs {
+	svgs: SvgsObj
 	idPrefix?: string
 }
 
-interface SetupReactIconReturn {
-	Icon: Icon
-	IconProvider: IconProvider
+interface setupReactSvgReturn {
+	Svg: Svg
+	SvgProvider: SvgProvider
 }
 
-const setupReactIcon = ({
-	icons,
+const setupReactSvg = ({
+	svgs,
 	idPrefix,
-}: SetupReactIconArgs): SetupReactIconReturn => {
+}: setupReactSvgArgs): setupReactSvgReturn => {
 	const getSvgId = getSvgIdGenerator(idPrefix)
-	const IconGroup = iconGroupGenerator(icons)
+	const SvgGroup = svgGroupGenerator(svgs)
 
 	return {
-		IconProvider: iconProviderGenerator(icons, IconGroup, getSvgId),
-		Icon: iconGenerator(icons, IconGroup, getSvgId),
+		SvgProvider: svgProviderGenerator(svgs, SvgGroup, getSvgId),
+		Svg: svgGenerator(svgs, SvgGroup, getSvgId),
 	}
 }
 
-export default setupReactIcon
+export default setupReactSvg

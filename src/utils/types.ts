@@ -1,4 +1,4 @@
-export interface IconObj {
+export interface SvgObj {
 	path: string
 	x: number
 	y: number
@@ -7,6 +7,6 @@ export interface IconObj {
 	alt?: string
 }
 
-export interface IconsObj {
-	[key: string]: IconObj
+export interface SvgsObj {
+	[key: string]: SvgObj
 }
