@@ -1,18 +1,18 @@
 {
-	"name": "react-icon",
+	"name": "@obelism/react-svg",
 	"description": "A performant way to load and show SVG in a React applications",
 	"license": "MIT",
 	"version": "1.0.0",
-	"author": "Maarten Bruggink <hello@maarten.cool> (https://www.maarten.cool/)",
+	"author": "Obelism <hello@obelism.studio> (https://www.obelism.studio)",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/MaartenBruggink/react-icon"
+		"url": "https://github.com/Obelism/react-svg"
 	},
-	"types": "./dist/react-icon.d.ts",
+	"types": "./dist/react-svg.d.ts",
 	"exports": {
-		"require": "./dist/react-icon.cjs",
-		"import": "./dist/react-icon.mjs",
-		"module": "./dist/react-icon.esm.js"
+		"require": "./dist/react-svg.cjs",
+		"import": "./dist/react-svg.mjs",
+		"module": "./dist/react-svg.esm.js"
 	},
 	"scripts": {
 		"dev": "bunchee ./src/main.ts -w",

@@ -11,7 +11,7 @@ The concept is to provide a minimal interface to render icons without needing to
 ## Quick start
 
 ```js
-import setupReactIcon from 'react-icon'
+import setupReactIcon from '@obelism/react-svg'
 
 export const { IconProvider, Icon } = setupReactIcon({
 	icons: {
