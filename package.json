@@ -1,6 +1,13 @@
 {
 	"name": "react-icon",
+	"description": "A performant way to load and show SVG in a React applications",
+	"license": "MIT",
 	"version": "1.0.0",
+	"author": "Maarten Bruggink <hello@maarten.cool> (https://www.maarten.cool/)",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/MaartenBruggink/react-icon"
+	},
 	"types": "./dist/react-icon.d.ts",
 	"exports": {
 		"require": "./dist/react-icon.cjs",
@@ -24,8 +31,8 @@
 		"swr": "^2.0.3"
 	},
 	"peerDependencies": {
-		"react": "^17.x.x",
-		"swr": "^1.x.x"
+		"react": ">=17.0.0",
+		"swr": ">=1.0.0"
 	},
 	"devDependencies": {
 		"bunchee": "^2.2.0",

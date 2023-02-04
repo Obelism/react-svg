@@ -1,6 +1,6 @@
 # React Icon
 
-| A performant way to load and show SVG in a React applications.
+> A performant way to load and show SVG in a React applications.
 
 The concept is to provide a minimal interface to render icons without needing to convert SVGs to React components. This library support three ways to show icons;
 
