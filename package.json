@@ -2,7 +2,7 @@
 	"name": "@obelism/react-svg",
 	"description": "A performant way to load and show SVG in a React applications",
 	"license": "MIT",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"author": "Obelism <hello@obelism.studio> (https://www.obelism.studio)",
 	"repository": {
 		"type": "git",
@@ -25,21 +25,19 @@
 	"files": [
 		"dist"
 	],
-	"dependencies": {
-		"@types/node": "^18.11.18",
-		"@types/react": "^18.0.27",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"swr": "^2.0.3"
-	},
 	"peerDependencies": {
 		"react": ">=17.0.0",
 		"swr": ">=1.0.0"
 	},
 	"devDependencies": {
+		"@types/node": "^18.11.18",
+		"@types/react": "^18.0.27",
 		"bunchee": "^2.2.0",
 		"eslint": "^8.33.0",
 		"prettier": "^2.8.3",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"swr": "^2.0.3",
 		"ts-node": "^10.9.1",
 		"tslib": "^2.5.0",
 		"typescript": "^4.9.5"
