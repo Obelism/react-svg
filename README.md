@@ -1,5 +1,17 @@
 # React Icon
 
+<p align="center">
+  <a aria-label="NPM version" href="https://www.npmjs.com/package/@obelism/react-svg">
+    <img alt="" src="https://badgen.net/npm/v/@obelism/react-svg@1.0.3">
+  </a>
+  <a aria-label="Package size" href="https://bundlephobia.com/result?p=@obelism/react-svg">
+    <img alt="" src="https://badgen.net/bundlephobia/minzip/@obelism/react-svg@1.0.3">
+  </a>
+  <a aria-label="License" href="https://github.com/Obelism/react-svg/blob/main/LICENSE">
+    <img alt="" src="https://badgen.net/npm/license/@obelism/react-svg@1.0.3">
+  </a>
+</p>
+
 > A performant way to load and show SVG in a React applications.
 
 The concept is to provide a minimal interface to render icons without needing to convert SVGs to React components. This library support three ways to show icons;
