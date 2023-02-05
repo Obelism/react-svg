@@ -7,7 +7,7 @@
         <img alt="" src="https://badgen.net/npm/v/@obelism/react-svg">
     </a>
     <a aria-label="Package size" href="https://bundlephobia.com/result?p=@obelism/react-svg">
-        <img alt="" src="https://badgen.net/bundlephobia/minzip/@obelism/react-svg@1.1.1">
+        <img alt="" src="https://badgen.net/bundlephobia/minzip/@obelism/react-svg">
     </a>
     <a aria-label="License" href="https://github.com/Obelism/react-SVG/blob/main/LICENSE">
         <img alt="" src="https://badgen.net/npm/license/@obelism/react-svg">
