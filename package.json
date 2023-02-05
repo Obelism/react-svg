@@ -1,6 +1,6 @@
 {
 	"name": "@obelism/react-svg",
-	"description": "A performant way to load and show SVG in a React applications",
+	"description": "A performant way to load and show SVG in React applications",
 	"license": "MIT",
 	"version": "1.1.1",
 	"author": "Obelism <hello@obelism.studio> (https://www.obelism.studio)",
