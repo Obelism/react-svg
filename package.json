@@ -2,7 +2,7 @@
 	"name": "@obelism/react-svg",
 	"description": "A performant way to load and show SVG in React applications",
 	"license": "MIT",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"author": "Obelism <hello@obelism.studio> (https://www.obelism.studio)",
 	"repository": {
 		"type": "git",
