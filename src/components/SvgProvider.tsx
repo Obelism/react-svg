@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useCallback, useState } from 'react'
+import React, { FC, memo, ReactNode, useCallback, useState } from 'react'
 
 import {
 	SvgContext,
@@ -17,14 +17,14 @@ interface SvgProviderProps {
 
 export type SvgProvider = FC<SvgProviderProps>
 
-export const svgProviderGenerator =
-	(
-		svgs: SvgsObj,
-		SvgGroup: SvgGroupInterface,
-		getSvgId: GetSvgId,
-	): SvgProvider =>
-	({ children }) => {
+export const svgProviderGenerator = (
+	svgs: SvgsObj,
+	SvgGroup: SvgGroupInterface,
+	getSvgId: GetSvgId,
+): SvgProvider => {
+	const Provider: SvgProvider = memo(({ children }) => {
 		const [svgsData, setSvgsData] = useState(INITIAL_SVG_DATA)
+		const referencedKeys = Object.keys(svgsData)
 
 		const loadSvgData: SvgDispatch = useCallback((svg: SvgDispatchType) => {
 			if (!svgs[svg]) return
@@ -37,17 +37,24 @@ export const svgProviderGenerator =
 
 		return (
 			<>
-				<svg style={{ display: 'none' }}>
-					<defs>
-						{Object.keys(svgsData).map((svg) => (
-							<SvgGroup key={svg} id={getSvgId(svg)} svg={svg} />
-						))}
-					</defs>
-				</svg>
+				{referencedKeys.length > 0 && (
+					<svg style={{ display: 'none' }}>
+						<defs>
+							{referencedKeys.map((svg) => (
+								<SvgGroup key={svg} id={getSvgId(svg)} svg={svg} />
+							))}
+						</defs>
+					</svg>
+				)}
 
 				<SvgContext.Provider value={loadSvgData}>
 					{children}
 				</SvgContext.Provider>
 			</>
 		)
-	}
+	})
+
+	Provider.displayName = 'SvgProvider'
+
+	return Provider
+}
