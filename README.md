@@ -1,15 +1,15 @@
 # React SVG
 
 <p>
-  <a aria-label="NPM version" href="https://www.npmjs.com/package/@obelism/react-svg">
-    <img alt="" src="https://badgen.net/npm/v/@obelism/react-svg">
-  </a>
-  <a aria-label="Package size" href="https://bundlephobia.com/result?p=@obelism/react-svg">
-    <img alt="" src="https://badgen.net/bundlephobia/minzip/@obelism/react-svg">
-  </a>
-  <a aria-label="License" href="https://github.com/Obelism/react-SVG/blob/main/LICENSE">
-    <img alt="" src="https://badgen.net/npm/license/@obelism/react-svg">
-  </a>
+    <a aria-label="NPM version" href="https://www.npmjs.com/package/@obelism/react-svg">
+        <img alt="" src="https://badgen.net/npm/v/@obelism/react-svg">
+    </a>
+    <a aria-label="Package size" href="https://bundlephobia.com/result?p=@obelism/react-svg">
+        <img alt="" src="https://badgen.net/bundlephobia/minzip/@obelism/react-svg@1.1.1">
+    </a>
+    <a aria-label="License" href="https://github.com/Obelism/react-SVG/blob/main/LICENSE">
+        <img alt="" src="https://badgen.net/npm/license/@obelism/react-svg">
+    </a>
 </p>
 
 > A performant way to load and show SVG in React applications.
@@ -26,16 +26,16 @@ The concept is to provide a minimal interface to render SVGs without needing to 
 import setupReactSvg from '@obelism/react-svg'
 
 export const { SvgProvider, Svg } = setupReactSvg({
-	svgs: {
-		arrowBack: {
-			path: '/SVGs/arrow-back.svg',
-			x: 0,
-			y: 0,
-			width: 800,
-			height: 800,
-			alt: 'Back arrow',
-		},
-	},
+    svgs: {
+        arrowBack: {
+            path: '/SVGs/arrow-back.svg',
+            x: 0,
+            y: 0,
+            width: 800,
+            height: 800,
+            alt: 'Back arrow',
+        },
+    },
 })
 ```
 
@@ -43,28 +43,28 @@ In the initialization there needs to be an object of all SVGs that you support. 
 
 ```jsx
 <SvgProvider>
-	<header>
-		<a href='/previous'>
-			<Svg type="link" svg='arrowBack' />
-			Back to overview
-		</a>
-	</header>
+    <header>
+        <a href='/previous'>
+            <Svg type="link" svg='arrowBack' />
+            Back to overview
+        </a>
+    </header>
 
-	<main>...</main>
+    <main>...</main>
 
-	<footer>
-		<a href='/previous'>
-			<Svg type="link" svg='arrowBack' />
-			Previous article
-		</a>
+    <footer>
+        <a href='/previous'>
+            <Svg type="link" svg='arrowBack' />
+            Previous article
+        </a>
 
-		<a href='/next'>
-			<span className="flipped">
-				<Svg type="link" svg='arrowBack' alt="Forward arrow" />
-			</span>
-			Next article
-		</a>
-	</footer>
+        <a href='/next'>
+            <span className="flipped">
+                <Svg type="link" svg='arrowBack' alt="Forward arrow" />
+            </span>
+            Next article
+        </a>
+    </footer>
 <SvgProvider>
 ```
 
@@ -76,8 +76,8 @@ This library consist of three parts; the generator which gives you a provider an
 
 ```js
 export const { SvgProvider, Svg } = setupReactSvg({
-	svgs: {...},
-	idPrefix: "🦦",
+    svgs: {...},
+    idPrefix: "🦦",
 })
 ```
 
@@ -88,14 +88,14 @@ Accepted arguments;
 ```js
 ...
 svgs: {
-	arrowBack: {
-		path: '/SVGs/arrow-back.svg',
-		x: 0,
-		y: 0,
-		width: 800,
-		height: 800,
-		alt: 'Back arrow',
-	},
+    arrowBack: {
+        path: '/SVGs/arrow-back.svg',
+        x: 0,
+        y: 0,
+        width: 800,
+        height: 800,
+        alt: 'Back arrow',
+    },
 },
 ...
 ```
@@ -133,7 +133,7 @@ This is the provider that keeps track of the context for the Svgs that use the `
 <Svg type="link" svg="arrowBack" alt="Forward arrow" />
 ```
 
-This is the primitive component that can be used to show the SVG. It will either render a; `<img />` for when the type is external or a `<SVG>` for when the type is `link` or `inline`. For each type of rendering extra props can be passed to be used as html attributes; `className`, `style`, `data-*`, etc.
+This is the primitive component that can be used to show the SVG. It will either render a; `<img />` for when the type is external or a `<svg>` for when the type is `link` or `inline`. For each type of rendering extra props can be passed to be used as html attributes; `className`, `style`, `data-*`, etc.
 
 Specific arguments;
 
@@ -145,17 +145,17 @@ Type of rendering the SVG;
 - `link` (default) - Lazy loads the SVG in the provider and links it up using the id.
 - `inline` - Lazy loads the SVG in the component
 
-#### SVG
+#### svg
 
-Key of the SVG to be rendered. This value needs to match up with a key you passed as an `SVG` in the `setupReactSvg`.
+Key of the SVF to be rendered. This value needs to match up with a key you passed as a singular SVG entry in the `setupReactSvg`.
 
 #### loading
 
-Specifically for when using `external`. This library relies on the (loading)[https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading#images_and_iframes] attrribute for images. The default behaviour that we pass is `lazy`. For above the fold SVGs it's recommended to use `eager`.
+Specifically for when using `external`. This library relies on the [loading](https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading#images_and_iframes) attrribute for images. The default behaviour that we pass is `lazy`. For above the fold SVGs it's recommended to use `eager`.
 
 ## Why?
 
-✨ SVGs are awesome ✨. However using them in React can be a crappy experience without the right tools. Changing every `fill-rule` to `fillRule` is not that fun. And at the same time this adds bundle size and increases the initial document when using SSG or SSG. But sometimes you do need that flexibilty for animations. The goal with this library is to load SVGs in the most performant way and giving the flexibility to switch without having to refactor a lot. To keep the API minimal the functionality is also limited, for full control options like [react-SVG](https://www.npmjs.com/package/react-SVG) might be a better fit.
+✨ SVGs are awesome ✨. However using them in React can be a crappy experience without the right tools. Changing every `fill-rule` to `fillRule` is not that fun. And at the same time this adds bundle size and increases the initial document when using SSG or SSG. But sometimes you do need that flexibilty for animations. The goal with this library is to load SVGs in the most performant way and giving the flexibility to switch without having to refactor a lot. To keep the API minimal the functionality is also limited, for full control options like [react-svg](https://www.npmjs.com/package/react-svg) might be a better fit.
 
 ## Dependencies
 

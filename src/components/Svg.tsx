@@ -32,18 +32,19 @@ export const svgGenerator = (
 		}, [linkSvg, svg])
 	}
 
-	return ({ type = 'link', svg, ...rest }) => {
+	return ({ type = 'link', svg, alt, ...rest }) => {
 		useSvgLink(type === 'link' ? svg : '')
 
 		const svgData = svgs[svg]
 
 		if (!svgData) return null
 
-		if (type === 'external') return <SvgImage {...rest} svgData={svgData} />
+		if (type === 'external')
+			return <SvgImage {...rest} alt={alt} svgData={svgData} />
 
 		return (
 			<svg {...rest} viewBox={formatViewbox(svgData)} xmlSpace="preserve">
-				{svgData.alt && <title>{svgData.alt}</title>}
+				{(alt || svgData.alt) && <title>{alt || svgData.alt}</title>}
 
 				{type === 'inline' ? (
 					<SvgGroup svg={svg} />

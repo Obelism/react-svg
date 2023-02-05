@@ -10,6 +10,7 @@ interface SvgImage {
 export const SvgImage: FC<SvgImage> = ({
 	svgData,
 	loading = 'lazy',
+	alt,
 	...rest
 }) => (
 	<img
@@ -18,7 +19,7 @@ export const SvgImage: FC<SvgImage> = ({
 			aspectRatio: `${svgData.width}/${svgData.height}`,
 			position: 'relative',
 		}}
-		alt={svgData?.alt || ''}
+		alt={alt || svgData?.alt || ''}
 		src={svgData.path}
 		loading={loading}
 	/>
