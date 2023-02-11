@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import useSWR from 'swr'
 
 import { SvgDispatchType } from '../utils/SvgContext'
-import { SvgsObj } from '../utils/types'
+import { CompleteSvgsObj } from '../utils/types'
 
 interface SvgGroupProps {
 	svg: SvgDispatchType
@@ -22,12 +22,12 @@ const fetcher = async (path: string) => {
 
 export type SvgGroupInterface = FC<SvgGroupProps>
 
-export const svgGroupGenerator =
-	(svgs: SvgsObj): SvgGroupInterface =>
-	({ svg, ...rest }) => {
+export const svgGroupGenerator = (svgs: CompleteSvgsObj): SvgGroupInterface => {
+	return ({ svg, ...rest }) => {
 		const { data, error } = useSWR(svgs[svg].path, fetcher, SWRConfig)
 
 		if (!data || error) return null
 
 		return <g {...rest} dangerouslySetInnerHTML={{ __html: data }} />
 	}
+}

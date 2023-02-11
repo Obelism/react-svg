@@ -102,12 +102,16 @@ svgs: {
 
 This is the key/value store for all SVGs you want in your application. The provided key is used to load it using the component. It supports the following options;
 
-- `path` {string} - Path of the SVG
+- `path` {string} - Path of the SVG, optional when the rootFolder is set
 - `width` {number} - Viewbox width of the SVG
 - `height` {number} - Viewbox height of the SVG
 - `x` {number} - (optional) Horizontal start postion of the SVG Viewbox
 - `y` {number} - (optional) Vertical start postion of the SVG Viewbox
 - `alt` {string} - (optional) SVG alt text, can be left empty for decorative usage
+
+#### rootFolder
+
+When having most SVGs in the same folder this feature can be used skip having to set a path for each SVG. For example when setting this value to; `/images/icons`. It would automatically generate the path for the `arrowBack` like this; `/images/icons/arowBack.svg`.
 
 #### idPrefix
 

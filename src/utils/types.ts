@@ -1,5 +1,5 @@
-export interface SvgObj {
-	path: string
+export interface InputSvgObj {
+	path?: string
 	width: number
 	height: number
 	x?: number
@@ -7,6 +7,19 @@ export interface SvgObj {
 	alt?: string
 }
 
-export interface SvgsObj {
-	[key: string]: SvgObj
+export interface InputSvgsObj {
+	[key: string]: InputSvgObj
+}
+
+export interface CompleteSvgObj {
+	path: string
+	width: number
+	height: number
+	x: number
+	y: number
+	alt: string
+}
+
+export interface CompleteSvgsObj {
+	[key: string]: CompleteSvgObj
 }

@@ -1,8 +1,8 @@
 import React, { FC } from 'react'
-import { SvgObj } from 'utils/types'
+import { CompleteSvgObj } from 'utils/types'
 
 interface SvgImage {
-	svgData: SvgObj
+	svgData: CompleteSvgObj
 	loading?: 'lazy' | 'eager'
 	[key: string]: any
 }

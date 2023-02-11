@@ -1,7 +1,7 @@
 import React, { FC, useContext, useEffect } from 'react'
 
 import { SvgContext } from '../utils/SvgContext'
-import { SvgObj, SvgsObj } from '../utils/types'
+import { CompleteSvgObj, CompleteSvgsObj } from '../utils/types'
 import { GetSvgId } from '../utils/getSvgIdGenerator'
 
 import { SvgGroupInterface } from '../components/SvgGroup'
@@ -15,11 +15,11 @@ interface SvgProps {
 
 export type Svg = FC<SvgProps>
 
-const formatViewbox = ({ x, y, width, height }: SvgObj) =>
+const formatViewbox = ({ x, y, width, height }: CompleteSvgObj) =>
 	[x || 0, y || 0, width, height].join(' ')
 
 export const svgGenerator = (
-	svgs: SvgsObj,
+	svgs: CompleteSvgsObj,
 	SvgGroup: SvgGroupInterface,
 	getSvgId: GetSvgId,
 ): Svg => {

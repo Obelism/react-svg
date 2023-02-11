@@ -6,7 +6,7 @@ import {
 	SvgDispatchType,
 	INITIAL_SVG_DATA,
 } from '../utils/SvgContext'
-import { SvgsObj } from '../utils/types'
+import { CompleteSvgsObj } from '../utils/types'
 import { GetSvgId } from '../utils/getSvgIdGenerator'
 
 import { SvgGroupInterface } from './SvgGroup'
@@ -18,7 +18,7 @@ interface SvgProviderProps {
 export type SvgProvider = FC<SvgProviderProps>
 
 export const svgProviderGenerator = (
-	svgs: SvgsObj,
+	svgs: CompleteSvgsObj,
 	SvgGroup: SvgGroupInterface,
 	getSvgId: GetSvgId,
 ): SvgProvider => {
