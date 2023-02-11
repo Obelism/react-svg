@@ -10,8 +10,6 @@ describe('setupReactSvg', () => {
 		svgs: {
 			icon: {
 				path: '/path/to/icon.svg',
-				x: 0,
-				y: 0,
 				height: 16,
 				width: 9,
 				alt: 'Icon',

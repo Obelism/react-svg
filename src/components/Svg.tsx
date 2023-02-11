@@ -16,7 +16,7 @@ interface SvgProps {
 export type Svg = FC<SvgProps>
 
 const formatViewbox = ({ x, y, width, height }: SvgObj) =>
-	[x, y, width, height].join(' ')
+	[x || 0, y || 0, width, height].join(' ')
 
 export const svgGenerator = (
 	svgs: SvgsObj,
