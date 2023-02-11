@@ -29,10 +29,10 @@ export const { SvgProvider, Svg } = setupReactSvg({
     svgs: {
         arrowBack: {
             path: '/SVGs/arrow-back.svg',
-            x: 0,
-            y: 0,
             width: 800,
             height: 800,
+            x: 0,
+            y: 0,
             alt: 'Back arrow',
         },
     },
@@ -90,10 +90,10 @@ Accepted arguments;
 svgs: {
     arrowBack: {
         path: '/SVGs/arrow-back.svg',
-        x: 0,
-        y: 0,
         width: 800,
         height: 800,
+        x: 0,
+        y: 0,
         alt: 'Back arrow',
     },
 },
@@ -103,10 +103,10 @@ svgs: {
 This is the key/value store for all SVGs you want in your application. The provided key is used to load it using the component. It supports the following options;
 
 - `path` {string} - Path of the SVG
-- `x` {number} - Horizontal start postion of the SVG Viewbox
-- `y` {number} - Vertical start postion of the SVG Viewbox
 - `width` {number} - Viewbox width of the SVG
 - `height` {number} - Viewbox height of the SVG
+- `x` {number} - (optional) Horizontal start postion of the SVG Viewbox
+- `y` {number} - (optional) Vertical start postion of the SVG Viewbox
 - `alt` {string} - (optional) SVG alt text, can be left empty for decorative usage
 
 #### idPrefix
