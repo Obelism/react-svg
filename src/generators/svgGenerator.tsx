@@ -40,6 +40,12 @@ export const svgGenerator = <T extends SvgListT>(
 
 		const svgData = svgs[svg]
 
+		if (!svgData) {
+			if (process.env.NODE_ENV === 'development')
+				throw new Error('Unknown svg provided, check your setupReactSvg(...)')
+			return null
+		}
+
 		if (type === 'external')
 			return <SvgImage {...rest} alt={alt} svg={svg} svgData={svgData} />
 

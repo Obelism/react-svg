@@ -7,9 +7,9 @@ import setupReactSvg from '../src/main'
 describe('setupReactSvg', () => {
 	const { Svg, SvgProvider } = setupReactSvg({
 		idPrefix: '🧪',
+		rootFolder: '/path/to',
 		svgs: {
 			icon: {
-				path: '/path/to/icon.svg',
 				height: 16,
 				width: 9,
 				alt: 'Icon',
