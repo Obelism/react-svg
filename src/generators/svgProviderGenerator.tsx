@@ -1,27 +1,26 @@
-import React, { FC, memo, ReactNode, useCallback, useState } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 
-import { SvgListT } from '../utils/types'
+import { SvgListT, SvgProvider } from '../config/types'
 import {
 	SvgContext,
 	SvgDispatch,
 	SvgDispatchType,
 	INITIAL_SVG_DATA,
-} from '../utils/SvgContext'
-import { GetSvgId } from '../utils/getSvgIdGenerator'
+} from '../config/SvgContext'
 
-import { SvgGroupInterface } from './svgGroupGenerator'
+import { GetSvgId } from '../functions/getSvgIdGenerator'
 
-interface SvgProviderProps {
-	children: ReactNode
-}
-
-export type SvgProvider = FC<SvgProviderProps>
-
-export const svgProviderGenerator = (
-	svgs: SvgListT,
-	SvgGroup: SvgGroupInterface,
+export const svgProviderGenerator = <T extends SvgListT>(
+	svgs: T,
+	SvgGroup: ({
+		svg,
+		...rest
+	}: {
+		[x: string]: any
+		svg: keyof T
+	}) => JSX.Element | null,
 	getSvgId: GetSvgId,
-): SvgProvider => {
+) => {
 	const Provider: SvgProvider = memo(({ children }) => {
 		const [svgsData, setSvgsData] = useState(INITIAL_SVG_DATA)
 		const referencedKeys = Object.keys(svgsData)
@@ -55,6 +54,5 @@ export const svgProviderGenerator = (
 	})
 
 	Provider.displayName = 'SvgProvider'
-
 	return Provider
 }

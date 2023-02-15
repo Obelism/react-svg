@@ -77,6 +77,7 @@ This library consist of three parts; the generator which gives you a provider an
 ```js
 export const { SvgProvider, Svg } = setupReactSvg({
     svgs: {...},
+    rootFolder: "/images/icons",
     idPrefix: "🦦",
 })
 ```
@@ -110,6 +111,12 @@ This is the key/value store for all SVGs you want in your application. The provi
 - `alt` {string} - (optional) SVG alt text, can be left empty for decorative usage
 
 #### rootFolder
+
+```js
+...
+rootFolder: "/images/icons",
+...
+```
 
 When having most SVGs in the same folder this feature can be used skip having to set a path for each SVG. For example when setting this value to; `/images/icons`. It would automatically generate the path for the `arrowBack` like this; `/images/icons/arowBack.svg`.
 

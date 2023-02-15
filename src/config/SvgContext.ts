@@ -1,6 +1,6 @@
 import { createContext, Dispatch } from 'react'
 
-export interface SvgData {
+interface SvgData {
 	[key: string]: boolean
 }
 
