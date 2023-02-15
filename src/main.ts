@@ -1,12 +1,13 @@
-import { Svg, svgGenerator } from './components/Svg'
-import { svgGroupGenerator } from './components/SvgGroup'
-import { SvgProvider, svgProviderGenerator } from './components/SvgProvider'
-import { InputSvgsObj } from './utils/types'
+import { SvgListT } from './utils/types'
 import { getSvgIdGenerator } from './utils/getSvgIdGenerator'
-import { formatSvgsObject } from './utils/formatSvgsObject'
+
+import { Svg, svgGenerator } from './components/svgGenerator'
+import { svgGroupGenerator } from './components/svgGroupGenerator'
+import { svgImageGenerator } from './components/svgImageGenerator'
+import { SvgProvider, svgProviderGenerator } from './components/SvgProvider'
 
 interface setupReactSvgArgs {
-	svgs: InputSvgsObj
+	svgs: SvgListT
 	rootFolder?: string
 	idPrefix?: string
 }
@@ -21,13 +22,14 @@ const setupReactSvg = ({
 	rootFolder,
 	idPrefix,
 }: setupReactSvgArgs): setupReactSvgReturn => {
-	const formattedSvgsObject = formatSvgsObject(svgs, rootFolder)
 	const getSvgId = getSvgIdGenerator(idPrefix)
-	const SvgGroup = svgGroupGenerator(formattedSvgsObject)
+
+	const SvgGroup = svgGroupGenerator(svgs, rootFolder)
+	const SvgImage = svgImageGenerator(rootFolder)
 
 	return {
-		SvgProvider: svgProviderGenerator(formattedSvgsObject, SvgGroup, getSvgId),
-		Svg: svgGenerator(formattedSvgsObject, SvgGroup, getSvgId),
+		SvgProvider: svgProviderGenerator(svgs, SvgGroup, getSvgId),
+		Svg: svgGenerator(svgs, SvgGroup, SvgImage, getSvgId),
 	}
 }
 

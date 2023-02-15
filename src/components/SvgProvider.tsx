@@ -1,15 +1,15 @@
 import React, { FC, memo, ReactNode, useCallback, useState } from 'react'
 
+import { SvgListT } from '../utils/types'
 import {
 	SvgContext,
 	SvgDispatch,
 	SvgDispatchType,
 	INITIAL_SVG_DATA,
 } from '../utils/SvgContext'
-import { CompleteSvgsObj } from '../utils/types'
 import { GetSvgId } from '../utils/getSvgIdGenerator'
 
-import { SvgGroupInterface } from './SvgGroup'
+import { SvgGroupInterface } from './svgGroupGenerator'
 
 interface SvgProviderProps {
 	children: ReactNode
@@ -18,7 +18,7 @@ interface SvgProviderProps {
 export type SvgProvider = FC<SvgProviderProps>
 
 export const svgProviderGenerator = (
-	svgs: CompleteSvgsObj,
+	svgs: SvgListT,
 	SvgGroup: SvgGroupInterface,
 	getSvgId: GetSvgId,
 ): SvgProvider => {

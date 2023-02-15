@@ -1,13 +1,16 @@
 import React, { FC } from 'react'
 import useSWR from 'swr'
 
+import { SvgListT } from '../utils/types'
 import { SvgDispatchType } from '../utils/SvgContext'
-import { CompleteSvgsObj } from '../utils/types'
+import { formatSvgPath } from '../utils/formatSvgPath'
 
 interface SvgGroupProps {
 	svg: SvgDispatchType
 	[x: string]: any
 }
+
+export type SvgGroupInterface = FC<SvgGroupProps>
 
 const SWRConfig = Object.freeze({
 	revalidateIfStale: false,
@@ -38,11 +41,16 @@ const fetcher = async (path: string) => {
 	return removeSvgTag(svgText)
 }
 
-export type SvgGroupInterface = FC<SvgGroupProps>
-
-export const svgGroupGenerator = (svgs: CompleteSvgsObj): SvgGroupInterface => {
+export const svgGroupGenerator = (
+	svgs: SvgListT,
+	rootFolder?: string,
+): SvgGroupInterface => {
 	return ({ svg, ...rest }) => {
-		const { data, error } = useSWR(svgs[svg].path, fetcher, SWRConfig)
+		const { data, error } = useSWR(
+			svgs[svg].path || formatSvgPath(svg, rootFolder),
+			fetcher,
+			SWRConfig,
+		)
 
 		if (!data || error) return null
 

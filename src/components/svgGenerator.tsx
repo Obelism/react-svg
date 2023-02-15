@@ -1,11 +1,10 @@
 import React, { FC, useContext, useEffect } from 'react'
 
+import { SvgListT, SvgT } from '../utils/types'
 import { SvgContext } from '../utils/SvgContext'
-import { CompleteSvgObj, CompleteSvgsObj } from '../utils/types'
 import { GetSvgId } from '../utils/getSvgIdGenerator'
 
-import { SvgGroupInterface } from '../components/SvgGroup'
-import { SvgImage } from './SvgImage'
+import { SvgGroupInterface } from './svgGroupGenerator'
 
 interface SvgProps {
 	type: 'external' | 'link' | 'inline'
@@ -15,12 +14,13 @@ interface SvgProps {
 
 export type Svg = FC<SvgProps>
 
-const formatViewbox = ({ x, y, width, height }: CompleteSvgObj) =>
+const formatViewbox = ({ x, y, width, height }: SvgT) =>
 	[x || 0, y || 0, width, height].join(' ')
 
 export const svgGenerator = (
-	svgs: CompleteSvgsObj,
+	svgs: SvgListT,
 	SvgGroup: SvgGroupInterface,
+	SvgImage: any,
 	getSvgId: GetSvgId,
 ): Svg => {
 	const useSvgLink = (svg: string) => {
@@ -37,10 +37,8 @@ export const svgGenerator = (
 
 		const svgData = svgs[svg]
 
-		if (!svgData) return null
-
 		if (type === 'external')
-			return <SvgImage {...rest} alt={alt} svgData={svgData} />
+			return <SvgImage {...rest} alt={alt} svg={svg} svgData={svgData} />
 
 		return (
 			<svg {...rest} viewBox={formatViewbox(svgData)} xmlSpace="preserve">

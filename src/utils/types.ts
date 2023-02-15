@@ -1,4 +1,4 @@
-export interface InputSvgObj {
+export interface SvgT {
 	path?: string
 	width: number
 	height: number
@@ -7,19 +7,6 @@ export interface InputSvgObj {
 	alt?: string
 }
 
-export interface InputSvgsObj {
-	[key: string]: InputSvgObj
-}
-
-export interface CompleteSvgObj {
-	path: string
-	width: number
-	height: number
-	x: number
-	y: number
-	alt: string
-}
-
-export interface CompleteSvgsObj {
-	[key: string]: CompleteSvgObj
+export interface SvgListT {
+	[key: string]: SvgT
 }
