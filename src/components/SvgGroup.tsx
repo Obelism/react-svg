@@ -15,9 +15,27 @@ const SWRConfig = Object.freeze({
 	realidateOnReconnect: false,
 })
 
+const ATTRIUBTES_TO_STRIP = ['xmlns', 'viewBox', 'xml:space']
+
+const removeSvgTag = (str: string): string => {
+	const parser = new DOMParser()
+	const svg = parser.parseFromString(str, 'image/svg+xml').querySelector('svg')
+	const innerContent = svg?.innerHTML
+
+	if (!innerContent) return ''
+
+	const attributes = Array.from(svg.attributes)
+		.filter((attr) => !ATTRIUBTES_TO_STRIP.includes(attr.name))
+		.map((attr) => `${attr.name}="${attr.value}"`)
+		.join(' ')
+
+	return `<g ${attributes}>${innerContent}</g>`
+}
+
 const fetcher = async (path: string) => {
 	const res = await fetch(path)
-	return await res.text()
+	const svgText = await res.text()
+	return removeSvgTag(svgText)
 }
 
 export type SvgGroupInterface = FC<SvgGroupProps>
