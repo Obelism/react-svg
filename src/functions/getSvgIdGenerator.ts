@@ -4,5 +4,5 @@ export type GetSvgId = (a: string) => string
 
 export const getSvgIdGenerator =
 	(idPrefix?: string): GetSvgId =>
-	(key: string): string =>
+	(key) =>
 		`${idPrefix || DEFAULT_PREFIX}-${key}`
