@@ -41,7 +41,7 @@ export const svgGenerator = <T extends SvgListT>(
 		const svgData = svgs[svg]
 
 		if (!svgData) {
-			if (process.env.NODE_ENV === 'development')
+			if (process.env.NODE_ENV !== 'production')
 				throw new Error('Unknown svg provided, check your setupReactSvg(...)')
 			return null
 		}

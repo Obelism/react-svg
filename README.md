@@ -168,6 +168,23 @@ Specifically for when using `external`. This library relies on the [loading](htt
 
 ✨ SVGs are awesome ✨. However using them in React can be a crappy experience without the right tools. Changing every `fill-rule` to `fillRule` is not that fun. And at the same time this adds bundle size and increases the initial document when using SSG or SSG. But sometimes you do need that flexibilty for animations. The goal with this library is to load SVGs in the most performant way and giving the flexibility to switch without having to refactor a lot. To keep the API minimal the functionality is also limited, for full control options like [react-svg](https://www.npmjs.com/package/react-svg) might be a better fit.
 
+## Notes
+
+### React server components / NextJS App router
+
+Because this library uses context and client fetching both the provider and Svg component need to be client components. The easiest way to let NextJS this know is using this strucutre:
+
+```ts
+"use client";
+
+import setupReactSvg from "@obelism/react-svg";
+
+const { SvgProvider: Provider, Svg: SvgComponent } = setupReactSvg({ ... });
+
+export const SvgProvider = Provider;
+export const Svg = SvgComponent;
+```
+
 ## Dependencies
 
 - [react](https://www.npmjs.com/package/react) - For React.createElement, useContext and useEffect
