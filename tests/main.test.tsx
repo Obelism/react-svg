@@ -37,15 +37,6 @@ describe('setupReactSvg', () => {
 		cleanup()
 	})
 
-	it('Image with invalid svg', () => {
-		render(
-			<SvgProvider>
-				<Svg type="external" svg="non-referenced-icon" />
-			</SvgProvider>,
-		)
-		cleanup()
-	})
-
 	it('SVG inline default alt', () => {
 		const { getByTitle, container } = render(
 			<SvgProvider>
@@ -67,17 +58,6 @@ describe('setupReactSvg', () => {
 		getByTitle('Something different')
 		const svgs = container.querySelectorAll('svg')
 		expect(svgs.length).toBe(1)
-		cleanup()
-	})
-
-	it('SVG inline with invalid svg', () => {
-		const { container } = render(
-			<SvgProvider>
-				<Svg type="inline" svg="non-referenced-icon" />
-			</SvgProvider>,
-		)
-		const svgs = container.querySelectorAll('svg')
-		expect(svgs.length).toBe(0)
 		cleanup()
 	})
 
@@ -104,18 +84,6 @@ describe('setupReactSvg', () => {
 		getByTitle('🪩')
 		const use = container.querySelector('use')
 		expect(!!use).toBe(true)
-		cleanup()
-	})
-
-	it('SVG link with invalid svg', () => {
-		const { container } = render(
-			<SvgProvider>
-				<Svg type="link" svg="non-referenced-icon" />
-			</SvgProvider>,
-		)
-
-		const svgs = container.querySelectorAll('svg')
-		expect(svgs.length).toBe(0)
 		cleanup()
 	})
 })

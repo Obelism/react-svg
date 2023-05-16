@@ -172,7 +172,7 @@ Specifically for when using `external`. This library relies on the [loading](htt
 
 ### React server components / NextJS App router
 
-Because this library uses context and client fetching both the provider and Svg component need to be client components. The easiest way to let NextJS this know is using this strucutre:
+Because this library uses context and client fetching both the provider and Svg component need to be client components. The easiest way to let NextJS know these are client components is using this strucutre:
 
 ```ts
 "use client";
