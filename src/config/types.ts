@@ -1,5 +1,3 @@
-import { ReactNode } from 'react'
-
 export interface SvgT {
 	path?: string
 	width: number
@@ -17,8 +15,4 @@ export interface SvgImage {
 	svgData: SvgT
 	loading?: 'lazy' | 'eager'
 	[key: string]: any
-}
-
-export interface SvgProviderProps {
-	children: ReactNode
 }
