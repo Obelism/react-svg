@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useState } from 'react'
 
-import { SvgListT, SvgProvider } from '../config/types'
+import { SvgListT, SvgProviderProps } from '../config/types'
 import {
 	SvgContext,
 	SvgDispatch,
@@ -21,7 +21,7 @@ export const svgProviderGenerator = <T extends SvgListT>(
 	}) => JSX.Element | null,
 	getSvgId: GetSvgId,
 ) => {
-	const Provider: SvgProvider = memo(({ children }) => {
+	const Provider = memo(({ children }: SvgProviderProps) => {
 		const [svgsData, setSvgsData] = useState(INITIAL_SVG_DATA)
 		const referencedKeys = Object.keys(svgsData)
 

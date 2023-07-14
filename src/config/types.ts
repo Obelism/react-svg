@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 export interface SvgT {
 	path?: string
@@ -19,8 +19,6 @@ export interface SvgImage {
 	[key: string]: any
 }
 
-interface SvgProviderProps {
+export interface SvgProviderProps {
 	children: ReactNode
 }
-
-export type SvgProvider = FC<SvgProviderProps>
