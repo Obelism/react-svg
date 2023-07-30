@@ -9,11 +9,11 @@ import { svgFetcher } from '../functions/svgFetcher'
 
 export const svgGroupGenerator = <T extends SvgListT>(
 	svgs: T,
-	rootFolder: string | undefined,
+	rootFolder?: string,
 ) => {
 	return ({ svg, ...rest }: { svg: keyof T; [x: string]: any }) => {
 		const { data, error } = useSWR(
-			svgs[svg].path || formatSvgPath(String(svg), rootFolder),
+			svgs[svg].path || formatSvgPath<T>(svg, rootFolder),
 			svgFetcher,
 			SWRConfig,
 		)
