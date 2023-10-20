@@ -9,7 +9,7 @@
 		"cache"
 	],
 	"license": "MIT",
-	"version": "1.4.0",
+	"version": "1.4.1",
 	"author": "Obelism <hello@obelism.studio> (https://www.obelism.studio)",
 	"repository": {
 		"type": "git",
@@ -55,6 +55,6 @@
 		"ts-node": "^10.9.1",
 		"tslib": "^2.5.0",
 		"typescript": "^5.0.4",
-		"vitest": "^0.33.0"
+		"vitest": "^0.34.6"
 	}
 }
