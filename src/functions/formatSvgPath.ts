@@ -4,6 +4,7 @@ export const formatSvgPath = <T extends SvgListT>(
 	file: keyof T,
 	folder?: string,
 ): string => {
-	if (!folder) throw new Error('rootFolder is required when not passing a path')
+	if (!folder)
+		throw new Error('rootFolder is required when not providing a path')
 	return `${folder}/${String(file)}.svg`
 }
