@@ -1,4 +1,4 @@
-export interface SvgT {
+export type SvgT = {
 	path?: string
 	width: number
 	height: number
@@ -7,7 +7,7 @@ export interface SvgT {
 	alt?: string
 }
 
-export interface SvgListT {
+export type SvgListT = {
 	[key: string]: SvgT
 }
 

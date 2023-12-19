@@ -1,6 +1,6 @@
 import { createContext, Dispatch } from 'react'
 
-interface SvgData {
+type SvgData = {
 	[key: string]: boolean
 }
 

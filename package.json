@@ -9,20 +9,25 @@
 		"cache"
 	],
 	"license": "MIT",
-	"version": "1.4.3",
+	"version": "1.4.4",
 	"author": "Obelism <hello@obelism.studio> (https://www.obelism.studio)",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Obelism/react-svg"
 	},
-	"types": "./dist/react-svg.d.ts",
-	"main": "./dist/react-svg.esm.js",
-	"module": "./dist/react-svg.esm.js",
+	"types": "./dist/index.d.ts",
+	"main": "./dist/index.esm.js",
+	"module": "./dist/index.esm.js",
 	"exports": {
-		"require": "./dist/react-svg.cjs",
-		"import": "./dist/react-svg.mjs",
-		"module": "./dist/react-svg.esm.js"
+		".": {
+			"require": "./dist/index.cjs",
+			"import": "./dist/index.mjs",
+			"module": "./dist/index.esm.js"
+		}
 	},
+	"files": [
+		"dist"
+	],
 	"scripts": {
 		"dev": "bunchee ./src/main.ts -w",
 		"build": "bunchee ./src/main.ts",
@@ -33,9 +38,6 @@
 		"test:coverage": "vitest run --coverage",
 		"test:ci": "vitest run"
 	},
-	"files": [
-		"dist"
-	],
 	"peerDependencies": {
 		"react": ">=17.0.0",
 		"swr": "^2.2.4"

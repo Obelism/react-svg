@@ -14,7 +14,7 @@
     </a>
 </p>
 
-The concept is to provide a minimal interface to render SVGs without needing to convert them to React components. This library support three ways to show SVGs;
+The concept is to provide a minimal API to render SVGs without needing to convert them to React components. This library support three ways to show SVGs;
 
 - **Image**, it uses an image element to lazy load the SVG while provider the correct aspect ratio at all times. The most performant way of loading but doesn't give any context to the loaded SVG.
 - **Reference**, Using a global definition. This lazy loads the SVG in the provider and makes it possible to reference it in multiple places. This has the advantage of having the SVG in the DOM once and displaying it multiple times. This still works with contextual properties like; `fill: currentColor` in multiple places. A good middle ground between performance and control.
@@ -68,7 +68,7 @@ In the initialization there needs to be an object of all SVGs that you support. 
 <SvgProvider>
 ```
 
-## Interface
+## API
 
 This library consist of three parts; the generator which gives you a provider and a consumer.
 
