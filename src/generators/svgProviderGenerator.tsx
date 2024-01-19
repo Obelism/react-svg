@@ -10,6 +10,10 @@ import {
 
 import { GetSvgId } from '../functions/getSvgIdGenerator'
 
+export type SvgProviderProps = {
+	children: React.ReactNode
+}
+
 export const svgProviderGenerator = <T extends SvgListT>(
 	svgs: T,
 	SvgGroup: ({
@@ -21,7 +25,7 @@ export const svgProviderGenerator = <T extends SvgListT>(
 	}) => JSX.Element | null,
 	getSvgId: GetSvgId,
 ) => {
-	const Provider = memo(({ children }: { children: React.ReactNode }) => {
+	const Provider = memo(({ children }: SvgProviderProps) => {
 		const [svgsData, setSvgsData] = useState(INITIAL_SVG_DATA)
 		const referencedKeys = Object.keys(svgsData)
 
