@@ -6,7 +6,7 @@ import { SvgContext } from '../config/SvgContext'
 import { GetSvgId } from '../functions/getSvgIdGenerator'
 import { SvgGroup } from './svgGroupGenerator'
 import { SvgImage } from './svgImageGenerator'
-import { formatViewBox } from '../functions/formatViewBox'
+import { formatSvgViewBox } from '../functions/formatSvgViewBox'
 
 export type SvgProps<
 	SvgMapT extends SvgMap,
@@ -75,7 +75,11 @@ export const svgGenerator = <
 
 			if (type === 'link' || type === 'inline') {
 				return (
-					<svg {...rest} viewBox={formatViewBox(svgData)} xmlSpace="preserve">
+					<svg
+						{...rest}
+						viewBox={formatSvgViewBox(svgData)}
+						xmlSpace="preserve"
+					>
 						{(alt || svgData.alt) && <title>{alt || svgData.alt}</title>}
 
 						{type === 'inline' ? (
