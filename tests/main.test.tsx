@@ -2,7 +2,7 @@ import React from 'react'
 import { render, cleanup } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
-import setupReactSvg from '../src/main'
+import setupReactSvg, { formatSvgPath } from '../src/main'
 
 describe('setupReactSvg', () => {
 	const { Svg, SvgProvider } = setupReactSvg({
@@ -14,6 +14,13 @@ describe('setupReactSvg', () => {
 				width: 9,
 				alt: 'Icon',
 			},
+		},
+		svgRenderers: {
+			customElement: ({ svg, folder }) => (
+				<div id="customElement">
+					<img src={formatSvgPath(svg, folder)} alt="Custom alt tag" />
+				</div>
+			),
 		},
 	})
 
@@ -83,6 +90,19 @@ describe('setupReactSvg', () => {
 
 		getByTitle('🪩')
 		const use = container.querySelector('use')
+		expect(!!use).toBe(true)
+		cleanup()
+	})
+
+	it('Custom element', () => {
+		const { getByAltText, container } = render(
+			<SvgProvider>
+				<Svg type="customElement" svg="icon" />
+			</SvgProvider>,
+		)
+
+		getByAltText('Custom alt tag')
+		const use = container.querySelector('#customElement')
 		expect(!!use).toBe(true)
 		cleanup()
 	})
