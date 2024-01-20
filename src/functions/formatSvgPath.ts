@@ -1,7 +1,7 @@
-import { SvgListT } from 'config/types'
+import { SvgMap } from 'config/types'
 
-export const formatSvgPath = <T extends SvgListT>(
-	file: keyof T,
+export const formatSvgPath = <SvgMapT extends SvgMap>(
+	file: keyof SvgMapT,
 	folder?: string,
 ): string => {
 	if (!folder)

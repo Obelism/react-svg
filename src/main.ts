@@ -1,4 +1,4 @@
-import { SvgListT, ElementMap } from './config/types'
+import { SvgMap, SvgRenderMap } from './config/types'
 
 import { getSvgIdGenerator } from './functions/getSvgIdGenerator'
 
@@ -9,34 +9,42 @@ import { svgGroupGenerator } from './generators/svgGroupGenerator'
 
 export { formatSvgPath } from './functions/formatSvgPath'
 
+export type SetupReactSvgArgs<
+	SvgMapT extends SvgMap,
+	SvgRenderMapT extends SvgRenderMap<SvgMapT>,
+> = {
+	svgMap: SvgMapT
+	rootFolder?: string
+	idPrefix?: string
+	svgRenderers?: SvgRenderMapT
+}
+
 /**
  * @function setupReactSvg
  * @description Create the SvgProvider and Svg component based on the given arguments
  */
-const setupReactSvg = <T extends SvgListT, E extends ElementMap<T>>({
-	svgs,
+const setupReactSvg = <
+	SvgMapT extends SvgMap,
+	SvgRenderMapT extends SvgRenderMap<SvgMapT>,
+>({
+	svgMap: svgMap,
 	rootFolder,
 	idPrefix,
-	renderers,
-}: {
-	svgs: T
-	rootFolder?: string
-	idPrefix?: string
-	renderers?: E
-}) => {
+	svgRenderers,
+}: SetupReactSvgArgs<SvgMapT, SvgRenderMapT>) => {
 	const getSvgId = getSvgIdGenerator(idPrefix)
-	const SvgGroup = svgGroupGenerator<T>(svgs, rootFolder)
-	const SvgImage = svgImageGenerator<T>()
+	const SvgGroup = svgGroupGenerator<SvgMapT>(svgMap, rootFolder)
+	const SvgImage = svgImageGenerator<SvgMapT>()
 
 	return {
-		SvgProvider: svgProviderGenerator<T>(svgs, SvgGroup, getSvgId),
-		Svg: svgGenerator<T, E>(
-			svgs,
+		SvgProvider: svgProviderGenerator<SvgMapT>(svgMap, SvgGroup, getSvgId),
+		Svg: svgGenerator<SvgMapT, SvgRenderMapT>(
+			svgMap,
 			SvgGroup,
 			getSvgId,
 			SvgImage,
-			renderers,
 			rootFolder,
+			svgRenderers,
 		),
 	}
 }

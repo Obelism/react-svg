@@ -1,4 +1,4 @@
-import { SvgT } from '../config/types'
+import { SvgConfig } from '../config/types'
 
-export const formatViewbox = ({ x, y, width, height }: SvgT) =>
+export const formatViewBox = ({ x, y, width, height }: SvgConfig) =>
 	[x || 0, y || 0, width, height].join(' ')

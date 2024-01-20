@@ -1,37 +1,57 @@
 import React, { memo, useContext, useEffect } from 'react'
 
-import { SvgListT, ElementMap, SvgElement } from '../config/types'
+import { SvgMap, SvgRenderMap } from '../config/types'
 import { SvgContext } from '../config/SvgContext'
 
 import { GetSvgId } from '../functions/getSvgIdGenerator'
-import { formatViewbox } from '../functions/formatViewbox'
+import { SvgGroup } from './svgGroupGenerator'
+import { SvgImage } from './svgImageGenerator'
+import { formatViewBox } from '../functions/formatViewBox'
 
-export type SvgProps<E, T> = {
-	type: 'link' | 'inline' | 'external' | keyof E
-	svg: keyof T
+export type SvgProps<
+	SvgMapT extends SvgMap,
+	SvgRenderMapT extends SvgRenderMap<SvgMapT>,
+> = {
+	type: 'link' | 'inline' | 'external' | keyof SvgRenderMapT
+	svg: keyof SvgMapT
 	loading?: 'lazy' | 'eager'
+	className?: string
 	[x: string]: any
 }
+
+export type SvgElement<
+	SvgMapT extends SvgMap,
+	SvgRenderMapT extends SvgRenderMap<SvgMapT>,
+> = ({
+	type,
+	svg,
+	alt,
+	loading,
+	...rest
+}: SvgProps<SvgMapT, SvgRenderMapT>) => React.JSX.Element | null
 
 /**
  * Generator
  */
-export const svgGenerator = <T extends SvgListT, E extends ElementMap<T>>(
-	svgs: T,
-	SvgGroup: ({
-		svg,
-		...rest
-	}: {
-		[x: string]: any
-		svg: keyof T
-	}) => JSX.Element | null,
+export const svgGenerator = <
+	SvgMapT extends SvgMap,
+	SvgRenderMapT extends SvgRenderMap<SvgMapT>,
+>(
+	svgMap: SvgMapT,
+	SvgGroup: SvgGroup<SvgMapT>,
 	getSvgId: GetSvgId,
-	SvgImage: SvgElement<T>,
-	renderers?: E,
+	SvgImage: SvgImage<SvgMapT>,
 	rootFolder?: string,
-) => {
+	svgRendererMap?: SvgRenderMapT,
+): React.MemoExoticComponent<SvgElement<SvgMapT, SvgRenderMapT>> => {
 	const Svg = memo(
-		({ type = 'link', svg, alt, loading, ...rest }: SvgProps<E, T>) => {
+		({
+			type = 'link',
+			svg,
+			alt,
+			loading,
+			...rest
+		}: SvgProps<SvgMapT, SvgRenderMapT>) => {
 			const linkSvg = useContext(SvgContext)
 
 			useEffect(() => {
@@ -39,7 +59,7 @@ export const svgGenerator = <T extends SvgListT, E extends ElementMap<T>>(
 				linkSvg(String(svg))
 			}, [linkSvg, svg])
 
-			const svgData = svgs[svg]
+			const svgData = svgMap[svg]
 
 			if (!svgData) {
 				if (process.env.NODE_ENV !== 'production')
@@ -55,7 +75,7 @@ export const svgGenerator = <T extends SvgListT, E extends ElementMap<T>>(
 
 			if (type === 'link' || type === 'inline') {
 				return (
-					<svg {...rest} viewBox={formatViewbox(svgData)} xmlSpace="preserve">
+					<svg {...rest} viewBox={formatViewBox(svgData)} xmlSpace="preserve">
 						{(alt || svgData.alt) && <title>{alt || svgData.alt}</title>}
 
 						{type === 'inline' ? (
@@ -80,8 +100,8 @@ export const svgGenerator = <T extends SvgListT, E extends ElementMap<T>>(
 				)
 			}
 
-			if (renderers && renderers[type]) {
-				const El = renderers[type] as SvgElement<T>
+			if (svgRendererMap && svgRendererMap[type as string]) {
+				const El = svgRendererMap[type as string] as any
 				return (
 					<El
 						{...rest}
