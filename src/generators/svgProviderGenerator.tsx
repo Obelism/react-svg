@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useState } from 'react'
 
-import { SvgListT } from '../config/types'
+import { SvgMap } from '../config/types'
 import {
 	SvgContext,
 	SvgDispatch,
@@ -9,26 +9,27 @@ import {
 } from '../config/SvgContext'
 
 import { GetSvgId } from '../functions/getSvgIdGenerator'
+import { SvgGroup } from './svgGroupGenerator'
 
-export const svgProviderGenerator = <T extends SvgListT>(
-	svgs: T,
-	SvgGroup: ({
-		svg,
-		...rest
-	}: {
-		[x: string]: any
-		svg: keyof T
-	}) => JSX.Element | null,
+export type SvgProviderProps = {
+	children:
+		| React.ReactNode
+		| React.ReactElement<any, string | React.JSXElementConstructor<any>>
+}
+
+export const svgProviderGenerator = <SvgMapT extends SvgMap>(
+	svgMap: SvgMapT,
+	SvgGroup: SvgGroup<SvgMapT>,
 	getSvgId: GetSvgId,
 ) => {
-	const Provider = memo(({ children }: { children: React.ReactNode }) => {
-		const [svgsData, setSvgsData] = useState(INITIAL_SVG_DATA)
-		const referencedKeys = Object.keys(svgsData)
+	const Provider = memo(({ children }: SvgProviderProps) => {
+		const [svgMapToLoad, setSvgMapToLoad] = useState(INITIAL_SVG_DATA)
+		const referencedKeys = Object.keys(svgMapToLoad)
 
 		const loadSvgData: SvgDispatch = useCallback((svg: SvgDispatchType) => {
-			if (!svgs[svg]) return
+			if (!svgMap[svg]) return
 
-			setSvgsData((state) => ({
+			setSvgMapToLoad((state) => ({
 				...state,
 				[svg]: true,
 			}))
@@ -54,5 +55,6 @@ export const svgProviderGenerator = <T extends SvgListT>(
 	})
 
 	Provider.displayName = 'SvgProvider'
+
 	return Provider
 }

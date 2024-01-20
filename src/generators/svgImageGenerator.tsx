@@ -1,20 +1,39 @@
-import React from 'react'
+import React, { memo } from 'react'
 
-import { SvgElement, SvgListT } from '../config/types'
+import { SvgElementArgs, SvgMap } from '../config/types'
 
 import { formatSvgPath } from '../functions/formatSvgPath'
 
-export const svgImageGenerator = <T extends SvgListT>(): SvgElement<T> => {
-	return ({ svg, folder, svgData, loading = 'lazy', alt, ...rest }) => (
-		<img
-			{...rest}
-			style={{
-				aspectRatio: `${svgData.width}/${svgData.height}`,
-				position: 'relative',
-			}}
-			alt={alt || svgData?.alt || ''}
-			src={svgData.path || formatSvgPath<T>(svg, folder)}
-			loading={loading}
-		/>
+export type SvgImage<SvgMapT extends SvgMap> = React.MemoExoticComponent<
+	(args: SvgElementArgs<SvgMapT>) => JSX.Element | null
+>
+
+export const svgImageGenerator = <
+	SvgMapT extends SvgMap,
+>(): SvgImage<SvgMapT> => {
+	const SvgImage = memo(
+		({
+			svg,
+			folder,
+			svgData,
+			loading = 'lazy',
+			alt,
+			...rest
+		}: SvgElementArgs<SvgMapT>) => (
+			<img
+				{...rest}
+				style={{
+					aspectRatio: `${svgData.width}/${svgData.height}`,
+					position: 'relative',
+				}}
+				alt={alt || svgData?.alt || ''}
+				src={svgData.path || formatSvgPath<SvgMapT>(svg, folder)}
+				loading={loading}
+			/>
+		),
 	)
+
+	SvgImage.displayName = 'SvgImage'
+
+	return SvgImage
 }

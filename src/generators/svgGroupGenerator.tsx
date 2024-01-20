@@ -1,19 +1,28 @@
-import React from 'react'
+import React, { memo } from 'react'
 import useSWR from 'swr'
 
-import { SvgListT } from '../config/types'
+import { SvgMap } from '../config/types'
 import { SWRConfig } from '../config/SWRConfig'
 
 import { formatSvgPath } from '../functions/formatSvgPath'
 import { svgFetcher } from '../functions/svgFetcher'
 
-export const svgGroupGenerator = <T extends SvgListT>(
-	svgs: T,
+export type SvgGroupProps<SvgMapT extends SvgMap> = {
+	svg: keyof SvgMapT
+	[x: string]: any
+}
+
+export type SvgGroup<SvgMapT extends SvgMap> = React.MemoExoticComponent<
+	({ svg, ...rest }: SvgGroupProps<SvgMapT>) => React.JSX.Element | null
+>
+
+export const svgGroupGenerator = <SvgMapT extends SvgMap>(
+	svgMap: SvgMapT,
 	rootFolder?: string,
 ) => {
-	return ({ svg, ...rest }: { svg: keyof T; [x: string]: any }) => {
+	const SvgGroup = memo(({ svg, ...rest }: SvgGroupProps<SvgMapT>) => {
 		const { data, error } = useSWR(
-			svgs[svg].path || formatSvgPath<T>(svg, rootFolder),
+			svgMap[svg].path || formatSvgPath<SvgMapT>(svg, rootFolder),
 			svgFetcher,
 			SWRConfig,
 		)
@@ -21,5 +30,9 @@ export const svgGroupGenerator = <T extends SvgListT>(
 		if (!data || error) return null
 
 		return <g {...rest} dangerouslySetInnerHTML={{ __html: data }} />
-	}
+	})
+
+	SvgGroup.displayName = 'SvgGroup'
+
+	return SvgGroup
 }

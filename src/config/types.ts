@@ -1,4 +1,4 @@
-export type SvgT = {
+export type SvgConfig = {
 	path?: string
 	width: number
 	height: number
@@ -7,21 +7,29 @@ export type SvgT = {
 	alt?: string
 }
 
-export type SvgListT = {
-	[key: string]: SvgT
+export type SvgMap = Record<string, SvgConfig>
+
+type SvgRendererProps<SvgMapT extends SvgMap> = {
+	folder?: string
+	loading: boolean
+	alt?: string
+	svg: keyof SvgMapT
+	svgData: SvgMapT[keyof SvgMapT]
 }
 
-export type SvgElementArgs<T extends SvgListT> = {
+type SvgRenderer<SvgMapT extends SvgMap> = (
+	props: SvgRendererProps<SvgMapT>,
+) => React.JSX.Element | null
+
+export type SvgRenderMap<SvgMapT extends SvgMap> =
+	| undefined
+	| Record<string, SvgRenderer<SvgMapT>>
+
+export type SvgElementArgs<SvgMapT extends SvgMap> = {
 	folder: string
-	svg: keyof T
-	svgData: SvgT
+	svg: keyof SvgMapT
+	svgData: SvgConfig
 	alt: string
 	loading?: 'lazy' | 'eager'
 	[key: string]: any
 }
-
-export type SvgElement<T extends SvgListT> = (
-	args: SvgElementArgs<T>,
-) => JSX.Element | null
-
-export type ElementMap<T extends SvgListT> = Record<string, SvgElement<T>>

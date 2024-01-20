@@ -8,14 +8,14 @@ describe('setupReactSvg', () => {
 	const { Svg, SvgProvider } = setupReactSvg({
 		idPrefix: '🧪',
 		rootFolder: '/path/to',
-		svgs: {
+		svgMap: {
 			icon: {
 				height: 16,
 				width: 9,
 				alt: 'Icon',
 			},
 		},
-		renderers: {
+		svgRenderers: {
 			customElement: ({ svg, folder }) => (
 				<div id="customElement">
 					<img src={formatSvgPath(svg, folder)} alt="Custom alt tag" />
