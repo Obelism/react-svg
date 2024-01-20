@@ -27,7 +27,7 @@ const setupReactSvg = <
 	SvgMapT extends SvgMap,
 	SvgRenderMapT extends SvgRenderMap<SvgMapT>,
 >({
-	svgMap: svgMap,
+	svgMap,
 	rootFolder,
 	idPrefix,
 	svgRenderers,

@@ -8,7 +8,7 @@ const SVG_MAP = {
 }
 
 const { SvgProvider: Provider, Svg: SvgComponent } = setupReactSvg({
-	rootFolder: '/svg',
+	rootFolder: '/',
 	svgMap: SVG_MAP,
 })
 

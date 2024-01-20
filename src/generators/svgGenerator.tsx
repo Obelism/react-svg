@@ -64,7 +64,7 @@ export const svgGenerator = <
 			if (!svgData) {
 				if (process.env.NODE_ENV !== 'production')
 					throw new Error(
-						`Unknown svg provided; "${String(
+						`SvgProvider - Unknown svg provided; "${String(
 							svg,
 						)}", check your setupReactSvg(...)`,
 					)
