@@ -1,15 +1,27 @@
-import { SvgMap, SvgRenderMap } from './config/types'
+import {
+	SvgConfig,
+	SvgMap,
+	SvgRendererProps,
+	SvgRenderer,
+	SvgRenderMap,
+	SvgElementArgs,
+} from './config/types'
 
 import { getSvgIdGenerator } from './functions/getSvgIdGenerator'
 
-import { svgGenerator } from './generators/svgGenerator'
-import { svgProviderGenerator } from './generators/svgProviderGenerator'
+import { svgGenerator, SvgProps, SvgElement } from './generators/svgGenerator'
+import {
+	svgProviderGenerator,
+	SvgProviderProps,
+} from './generators/svgProviderGenerator'
 import { svgImageGenerator } from './generators/svgImageGenerator'
-import { svgGroupGenerator } from './generators/svgGroupGenerator'
+import {
+	svgGroupGenerator,
+	SvgGroupProps,
+	SvgGroup,
+} from './generators/svgGroupGenerator'
 
-export { formatSvgPath } from './functions/formatSvgPath'
-
-export type SetupReactSvgArgs<
+type SetupReactSvgArgs<
 	SvgMapT extends SvgMap,
 	SvgRenderMapT extends SvgRenderMap<SvgMapT>,
 > = {
@@ -47,6 +59,21 @@ const setupReactSvg = <
 			svgRenderers,
 		),
 	}
+}
+
+export type {
+	SvgConfig,
+	SvgMap,
+	SvgRendererProps,
+	SvgRenderer,
+	SvgRenderMap,
+	SvgElementArgs,
+	SetupReactSvgArgs,
+	SvgProps,
+	SvgElement,
+	SvgProviderProps,
+	SvgGroupProps,
+	SvgGroup,
 }
 
 export default setupReactSvg

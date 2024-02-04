@@ -9,7 +9,7 @@ export type SvgConfig = {
 
 export type SvgMap = Record<string, SvgConfig>
 
-type SvgRendererProps<SvgMapT extends SvgMap> = {
+export type SvgRendererProps<SvgMapT extends SvgMap> = {
 	folder?: string
 	loading: boolean
 	alt?: string
@@ -17,7 +17,7 @@ type SvgRendererProps<SvgMapT extends SvgMap> = {
 	svgData: SvgMapT[keyof SvgMapT]
 }
 
-type SvgRenderer<SvgMapT extends SvgMap> = (
+export type SvgRenderer<SvgMapT extends SvgMap> = (
 	props: SvgRendererProps<SvgMapT>,
 ) => React.JSX.Element | null
 

@@ -15,5 +15,6 @@
 		".babel_cache": true,
 		"dist": true,
 		"node_modules": true
-	}
+	},
+	"cSpell.words": ["bunchee", "Viewbox"]
 }

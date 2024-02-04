@@ -1,8 +1,6 @@
 import { createContext, Dispatch } from 'react'
 
-type SvgData = {
-	[key: string]: boolean
-}
+export type SvgData = Record<string, boolean>
 
 export type SvgDispatchType = string
 

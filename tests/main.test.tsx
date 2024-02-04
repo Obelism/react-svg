@@ -2,7 +2,7 @@ import React from 'react'
 import { render, cleanup } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
-import setupReactSvg, { formatSvgPath } from '../src/main'
+import setupReactSvg, { formatSvgPath } from '../src'
 
 describe('setupReactSvg', () => {
 	const { Svg, SvgProvider } = setupReactSvg({

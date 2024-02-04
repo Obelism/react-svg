@@ -9,7 +9,7 @@
 		"cache"
 	],
 	"license": "MIT",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"author": "Obelism <hello@obelism.studio> (https://www.obelism.studio)",
 	"repository": {
 		"type": "git",
@@ -30,9 +30,9 @@
 		"dist"
 	],
 	"scripts": {
-		"dev": "bunchee ./src/main.ts -w",
-		"build": "bunchee ./src/main.ts",
-		"format": "prettier '**' --write",
+		"dev": "bunchee ./src/index.ts -w",
+		"build": "bunchee ./src/index.ts",
+		"format": "prettier --write --ignore-unknown .",
 		"preview": "vite preview",
 		"test": "vitest",
 		"test:ui": "vitest --ui",

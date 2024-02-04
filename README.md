@@ -22,11 +22,11 @@ The concept is to provide a minimal API to render SVGs without needing to conver
 
 ## Quick start
 
-```js
+```ts
 import setupReactSvg from '@obelism/react-svg'
 
 export const { SvgProvider, Svg } = setupReactSvg({
-    svgs: {
+    svgMap: {
         arrowBack: {
             path: '/SVGs/arrow-back.svg',
             width: 800,
@@ -41,7 +41,7 @@ export const { SvgProvider, Svg } = setupReactSvg({
 
 In the initialization there needs to be an object of all SVGs that you support. This is a key/value object with path, viewbox info and alt tag. This gives you back two components. The `SvgProvider` needs to wrap all places where the `Svg` component is going to be used. Then when using the SVG component you provide the SVG to be shown, and the way it needs to be loaded; `link`, `external` or `inline`.
 
-```jsx
+```tsx
 <SvgProvider>
     <header>
         <a href='/previous'>
@@ -74,21 +74,22 @@ This library consist of three parts; the generator which gives you a provider an
 
 ### setupReactSvg
 
-```js
+```ts
 export const { SvgProvider, Svg } = setupReactSvg({
-    svgs: {...},
+    svgMap: {...},
     rootFolder: "/images/icons",
     idPrefix: "🦦",
+    svgRenderers: {...}
 })
 ```
 
 Accepted arguments;
 
-#### svgs
+#### svgMap
 
-```js
+```ts
 ...
-svgs: {
+svgMap: {
     arrowBack: {
         path: '/SVGs/arrow-back.svg',
         width: 800,
@@ -106,13 +107,13 @@ This is the key/value store for all SVGs you want in your application. The provi
 - `path` {string} - Path of the SVG, optional when the rootFolder is set
 - `width` {number} - Viewbox width of the SVG
 - `height` {number} - Viewbox height of the SVG
-- `x` {number} - (optional) Horizontal start postion of the SVG Viewbox
-- `y` {number} - (optional) Vertical start postion of the SVG Viewbox
+- `x` {number} - (optional) Horizontal start position of the SVG Viewbox
+- `y` {number} - (optional) Vertical start position of the SVG Viewbox
 - `alt` {string} - (optional) SVG alt text, can be left empty for decorative usage
 
 #### rootFolder
 
-```js
+```ts
 ...
 rootFolder: "/images/icons",
 ...
@@ -122,7 +123,7 @@ When having most SVGs in the same folder this feature can be used skip having to
 
 #### idPrefix
 
-```js
+```ts
 ...
 idPrefix: "🦦",
 ...
@@ -130,9 +131,25 @@ idPrefix: "🦦",
 
 To make references to the loaded SVGs we make use of ids. By default these are prefixed by; `_RI`. So for the the `arrowBack` the id would be; `_RI-arrowBack`. However if this gives problems in your application or you want to add some flair you can modify this to any string; `🦦-arrowBack`.
 
+#### svgRenderers
+
+An optional argument for your own custom render functions. This is convenient to be used in meta frameworks like NextJS if you want to utilize their Image components.
+
+```tsx
+...
+svgRenderers: {
+    'custom-image': ({ svg, folder, alt }) => (
+        <div id="customElement">
+            <img src={formatSvgPath(svg, folder)} alt={alt} />
+        </div>
+    )
+}
+...
+```
+
 ### SvgProvider
 
-```jsx
+```tsx
 <SvgProvider />
 ```
 
@@ -140,7 +157,7 @@ This is the provider that keeps track of the context for the Svgs that use the `
 
 ### Svg
 
-```jsx
+```tsx
 <Svg type="link" svg="arrowBack" alt="Forward arrow" />
 ```
 
@@ -162,17 +179,17 @@ Key of the SVF to be rendered. This value needs to match up with a key you passe
 
 #### loading
 
-Specifically for when using `external`. This library relies on the [loading](https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading#images_and_iframes) attrribute for images. The default behaviour that we pass is `lazy`. For above the fold SVGs it's recommended to use `eager`.
+Specifically for when using `external`. This library relies on the [loading](https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading#images_and_iframes) attribute for images. The default behavior that we pass is `lazy`. For above the fold SVGs it's recommended to use `eager`.
 
 ## Why?
 
-✨ SVGs are awesome ✨. However using them in React can be a crappy experience without the right tools. Changing every `fill-rule` to `fillRule` is not that fun. And at the same time this adds bundle size and increases the initial document when using SSG or SSG. But sometimes you do need that flexibilty for animations. The goal with this library is to load SVGs in the most performant way and giving the flexibility to switch without having to refactor a lot. To keep the API minimal the functionality is also limited, for full control options like [react-svg](https://www.npmjs.com/package/react-svg) might be a better fit.
+✨ SVGs are awesome ✨. However using them in React can be a crappy experience without the right tools. Changing every `fill-rule` to `fillRule` is not that fun. And at the same time this adds bundle size and increases the initial document when using SSG or SSG. But sometimes you do need that flexibility for animations. The goal with this library is to load SVGs in the most performant way and giving the flexibility to switch without having to refactor a lot. To keep the API minimal the functionality is also limited, for full control options like [react-svg](https://www.npmjs.com/package/react-svg) might be a better fit.
 
 ## Notes
 
 ### React server components / NextJS App router
 
-Because this library uses context and client fetching both the provider and Svg component need to be client components. The easiest way to let NextJS know these are client components is using this strucutre:
+Because this library uses context and client fetching both the provider and Svg component need to be client components. The easiest way to let NextJS know these are client components is using this structure:
 
 ```ts
 "use client";
