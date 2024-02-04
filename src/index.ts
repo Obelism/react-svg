@@ -21,6 +21,8 @@ import {
 	SvgGroup,
 } from './generators/svgGroupGenerator'
 
+export { formatSvgPath } from './functions/formatSvgPath'
+
 type SetupReactSvgArgs<
 	SvgMapT extends SvgMap,
 	SvgRenderMapT extends SvgRenderMap<SvgMapT>,
