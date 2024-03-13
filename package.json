@@ -1,15 +1,9 @@
 {
 	"name": "@obelism/react-svg",
 	"description": "A performant way to load and show SVG in React applications",
-	"keywords": [
-		"svg",
-		"react",
-		"icons",
-		"request",
-		"cache"
-	],
+	"keywords": ["svg", "react", "icons", "request", "cache"],
 	"license": "MIT",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"author": "Obelism <hello@obelism.studio> (https://www.obelism.studio)",
 	"repository": {
 		"type": "git",
@@ -26,9 +20,7 @@
 			"module": "./dist/index.esm.js"
 		}
 	},
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"scripts": {
 		"dev": "bunchee ./src/index.ts -w",
 		"build": "bunchee ./src/index.ts",
