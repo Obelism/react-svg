@@ -26,16 +26,16 @@ The concept is to provide a minimal API to render SVGs without needing to conver
 import setupReactSvg from '@obelism/react-svg'
 
 export const { SvgProvider, Svg } = setupReactSvg({
-    svgMap: {
-        arrowBack: {
-            path: '/SVGs/arrow-back.svg',
-            width: 800,
-            height: 800,
-            x: 0,
-            y: 0,
-            alt: 'Back arrow',
-        },
-    },
+	svgMap: {
+		arrowBack: {
+			path: '/SVGs/arrow-back.svg',
+			width: 800,
+			height: 800,
+			x: 0,
+			y: 0,
+			alt: 'Back arrow',
+		},
+	},
 })
 ```
 
@@ -186,6 +186,18 @@ Specifically for when using `external`. This library relies on the [loading](htt
 ✨ SVGs are awesome ✨. However using them in React can be a crappy experience without the right tools. Changing every `fill-rule` to `fillRule` is not that fun. And at the same time this adds bundle size and increases the initial document when using SSG or SSG. But sometimes you do need that flexibility for animations. The goal with this library is to load SVGs in the most performant way and giving the flexibility to switch without having to refactor a lot. To keep the API minimal the functionality is also limited, for full control options like [react-svg](https://www.npmjs.com/package/react-svg) might be a better fit.
 
 ## Notes
+
+### Types
+
+Because the components are generated within your codebase based on your configuration the package can't expose types for you. However you can use Typescript to generate them.
+
+```ts
+const { SvgProvider, Svg } = setupReactSvg({ ... });
+
+export type SvgProps = React.ComponentProps<typeof Svg>;
+```
+
+This will then give you the type with all your provided Svg options and custom renderers.
 
 ### React server components / NextJS App router
 

@@ -21,7 +21,7 @@ export default function Home() {
 			</div>
 
 			<div className={styles.center}>
-				<Svg className={styles.logo} svg="next" type="link" />
+				<Svg className={styles.logo} svg="next" type="externalLink" />
 			</div>
 
 			<div className={styles.grid}>

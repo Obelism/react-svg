@@ -62,12 +62,13 @@ export const svgGenerator = <
 			const svgData = svgMap[svg]
 
 			if (!svgData) {
-				if (process.env.NODE_ENV !== 'production')
-					throw new Error(
+				if (process.env.NODE_ENV !== 'production') {
+					console.error(
 						`SvgProvider - Unknown svg provided; "${String(
 							svg,
 						)}", check your setupReactSvg(...)`,
 					)
+				}
 				return null
 			}
 
@@ -85,7 +86,7 @@ export const svgGenerator = <
 						{type === 'inline' ? (
 							<SvgGroup svg={svg} />
 						) : (
-							<use x="0" y="0" xlinkHref={`#${getSvgId(String(svg))}`} />
+							<use x="0" y="0" href={`#${getSvgId(String(svg))}`} />
 						)}
 					</svg>
 				)
