@@ -6,6 +6,7 @@ import { SWRConfig } from '../config/SWRConfig'
 
 import { formatSvgPath } from '../functions/formatSvgPath'
 import { svgFetcher } from '../functions/svgFetcher'
+import { useSetLinkedSvgLoaded } from '../functions/useSvgLoaded'
 
 export type SvgGroupProps<SvgMapT extends SvgMap> = {
 	svg: keyof SvgMapT
@@ -21,10 +22,11 @@ export const svgGroupGenerator = <SvgMapT extends SvgMap>(
 	rootFolder?: string,
 ) => {
 	const SvgGroup = memo(({ svg, ...rest }: SvgGroupProps<SvgMapT>) => {
+		const setLinkedSvgLoaded = useSetLinkedSvgLoaded(String(svg))
 		const { data, error } = useSWR(
 			svgMap[svg].path || formatSvgPath<SvgMapT>(svg, rootFolder),
 			svgFetcher,
-			SWRConfig,
+			{ ...SWRConfig, onSuccess: setLinkedSvgLoaded },
 		)
 
 		if (!data || error) return null

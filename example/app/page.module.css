@@ -116,6 +116,7 @@
 .vercelLogo {
 	width: 100%;
 	max-width: 5rem;
+	transition: opacity 0.4s ease-in-out;
 }
 
 /* Enable hover only on non-touch devices */

@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useEffect, useRef } from 'react'
 
 import { SvgElementArgs, SvgMap } from '../config/types'
 
@@ -18,19 +18,32 @@ export const svgImageGenerator = <
 			svgData,
 			loading = 'lazy',
 			alt,
+			style,
+			onLoad,
 			...rest
-		}: SvgElementArgs<SvgMapT>) => (
-			<img
-				{...rest}
-				style={{
-					aspectRatio: `${svgData.width}/${svgData.height}`,
-					position: 'relative',
-				}}
-				alt={alt || svgData?.alt || ''}
-				src={svgData.path || formatSvgPath<SvgMapT>(svg, folder)}
-				loading={loading}
-			/>
-		),
+		}: SvgElementArgs<SvgMapT>) => {
+			const imgRef = useRef<HTMLImageElement>(null)
+
+			useEffect(() => {
+				if (imgRef?.current?.complete && onLoad) onLoad()
+			}, [])
+
+			return (
+				<img
+					{...rest}
+					onLoad={onLoad}
+					ref={imgRef}
+					style={{
+						aspectRatio: `${svgData.width}/${svgData.height}`,
+						position: 'relative',
+						...style,
+					}}
+					alt={alt || svgData?.alt || ''}
+					src={svgData.path || formatSvgPath<SvgMapT>(svg, folder)}
+					loading={loading}
+				/>
+			)
+		},
 	)
 
 	SvgImage.displayName = 'SvgImage'

@@ -1,3 +1,4 @@
+import { VercelSvg } from './client'
 import styles from './page.module.css'
 import { Svg } from './Svg'
 
@@ -15,7 +16,16 @@ export default function Home() {
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						By <Svg className={styles.vercelLogo} svg="vercel" type="link" />
+						By
+						<VercelSvg className={styles.vercelLogo} />
+						{/* <Svg
+
+							svg="vercel"
+							type="link"
+							onLoad={() => {
+								console.log('Loaded vercel')
+							}}
+						/> */}
 					</a>
 				</div>
 			</div>

@@ -1,4 +1,4 @@
-import React, { memo, useContext, useEffect } from 'react'
+import React, { memo, useContext, useEffect, useRef } from 'react'
 
 import { SvgMap, SvgRenderMap } from '../config/types'
 import { SvgContext } from '../config/SvgContext'
@@ -7,6 +7,7 @@ import { GetSvgId } from '../functions/getSvgIdGenerator'
 import { SvgGroup } from './svgGroupGenerator'
 import { SvgImage } from './svgImageGenerator'
 import { formatSvgViewBox } from '../functions/formatSvgViewBox'
+import { useLinkedSvgLoaded } from '../functions/useSvgLoaded'
 
 export type SvgProps<
 	SvgMapT extends SvgMap,
@@ -16,6 +17,7 @@ export type SvgProps<
 	svg: keyof SvgMapT
 	loading?: 'lazy' | 'eager'
 	className?: string
+	onLoad?: () => void
 	[x: string]: any
 }
 
@@ -29,6 +31,15 @@ export type SvgElement<
 	loading,
 	...rest
 }: SvgProps<SvgMapT, SvgRenderMapT>) => React.JSX.Element | null
+
+const BaseSvg = ({ svgData, alt, children, ...rest }: any) => {
+	return (
+		<svg {...rest} viewBox={formatSvgViewBox(svgData)} xmlSpace="preserve">
+			{(alt || svgData.alt) && <title>{alt || svgData.alt}</title>}
+			{children}
+		</svg>
+	)
+}
 
 /**
  * Generator
@@ -44,12 +55,58 @@ export const svgGenerator = <
 	rootFolder?: string,
 	svgRendererMap?: SvgRenderMapT,
 ): React.MemoExoticComponent<SvgElement<SvgMapT, SvgRenderMapT>> => {
+	const InlineSvg = ({
+		svgData,
+		alt,
+		getSvgId,
+		svg,
+		onLoad,
+		...rest
+	}: Omit<SvgProps<SvgMapT, SvgRenderMapT>, 'type'>) => {
+		const loaded = useRef<boolean>(false)
+
+		useEffect(() => {
+			if (!onLoad || loaded.current) return
+			loaded.current = true
+			onLoad()
+		}, [])
+
+		return (
+			<BaseSvg {...rest} svgData={svgData} alt={alt} onLoad={onLoad}>
+				<SvgGroup svg={svg} />
+			</BaseSvg>
+		)
+	}
+
+	const LinkedSvg = ({
+		svgData,
+		alt,
+		getSvgId,
+		svg,
+		onLoad,
+		...rest
+	}: Omit<SvgProps<SvgMapT, SvgRenderMapT>, 'type'>) => {
+		const loaded = useLinkedSvgLoaded(String(svg))
+
+		useEffect(() => {
+			if (!onLoad || !loaded) return
+			onLoad()
+		}, [onLoad, loaded])
+
+		return (
+			<BaseSvg {...rest} svgData={svgData} alt={alt}>
+				<use x="0" y="0" href={`#${getSvgId(String(svg))}`} />
+			</BaseSvg>
+		)
+	}
+
 	const Svg = memo(
 		({
 			type = 'link',
 			svg,
 			alt,
 			loading,
+			onLoad,
 			...rest
 		}: SvgProps<SvgMapT, SvgRenderMapT>) => {
 			const linkSvg = useContext(SvgContext)
@@ -74,21 +131,29 @@ export const svgGenerator = <
 
 			const folder = rootFolder || ''
 
-			if (type === 'link' || type === 'inline') {
+			if (type === 'inline') {
 				return (
-					<svg
+					<InlineSvg
 						{...rest}
-						viewBox={formatSvgViewBox(svgData)}
-						xmlSpace="preserve"
-					>
-						{(alt || svgData.alt) && <title>{alt || svgData.alt}</title>}
+						onLoad={onLoad}
+						getSvgId={getSvgId}
+						svgData={svgData}
+						alt={alt}
+						svg={svg}
+					/>
+				)
+			}
 
-						{type === 'inline' ? (
-							<SvgGroup svg={svg} />
-						) : (
-							<use x="0" y="0" href={`#${getSvgId(String(svg))}`} />
-						)}
-					</svg>
+			if (type === 'link') {
+				return (
+					<LinkedSvg
+						{...rest}
+						onLoad={onLoad}
+						getSvgId={getSvgId}
+						svgData={svgData}
+						alt={alt}
+						svg={svg}
+					/>
 				)
 			}
 
@@ -96,6 +161,7 @@ export const svgGenerator = <
 				return (
 					<SvgImage
 						{...rest}
+						onLoad={onLoad}
 						folder={folder}
 						loading={loading}
 						alt={alt}
@@ -110,6 +176,7 @@ export const svgGenerator = <
 				return (
 					<El
 						{...rest}
+						onLoad={onLoad}
 						folder={folder}
 						loading={loading}
 						alt={alt}
