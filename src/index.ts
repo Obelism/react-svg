@@ -51,7 +51,7 @@ const setupReactSvg = <
 	const SvgImage = svgImageGenerator<SvgMapT>()
 
 	return {
-		SvgProvider: svgProviderGenerator<SvgMapT>(svgMap, SvgGroup, getSvgId),
+		SvgProvider: svgProviderGenerator<SvgMapT>(SvgGroup, getSvgId),
 		Svg: svgGenerator<SvgMapT, SvgRenderMapT>(
 			svgMap,
 			SvgGroup,
