@@ -1,13 +1,12 @@
-import React, { memo, useContext, useEffect, useRef } from 'react'
+import React, { memo, useEffect, useRef } from 'react'
 
 import { SvgMap, SvgRenderMap } from '../config/types'
-import { SvgContext } from '../config/SvgContext'
 
 import { GetSvgId } from '../functions/getSvgIdGenerator'
 import { SvgGroup } from './svgGroupGenerator'
 import { SvgImage } from './svgImageGenerator'
 import { formatSvgViewBox } from '../functions/formatSvgViewBox'
-import { useLinkedSvgLoaded } from '../functions/useSvgLoaded'
+import { useLinkSvg, useLinkedSvgLoaded } from '../functions/useSvgLoaded'
 
 export type SvgProps<
 	SvgMapT extends SvgMap,
@@ -109,7 +108,7 @@ export const svgGenerator = <
 			onLoad,
 			...rest
 		}: SvgProps<SvgMapT, SvgRenderMapT>) => {
-			const linkSvg = useContext(SvgContext)
+			const linkSvg = useLinkSvg()
 
 			useEffect(() => {
 				if (type !== 'link') return
