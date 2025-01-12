@@ -18,14 +18,6 @@ export default function Home() {
 					>
 						By
 						<VercelSvg className={styles.vercelLogo} />
-						{/* <Svg
-
-							svg="vercel"
-							type="link"
-							onLoad={() => {
-								console.log('Loaded vercel')
-							}}
-						/> */}
 					</a>
 				</div>
 			</div>

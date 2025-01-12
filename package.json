@@ -39,7 +39,7 @@
 	},
 	"peerDependencies": {
 		"react": ">=17.0.0",
-		"swr": "^2.2.4"
+		"swr": ">=2.0.0"
 	},
 	"devDependencies": {
 		"@testing-library/react": "^14.0.0",
