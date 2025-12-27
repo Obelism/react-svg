@@ -9,53 +9,49 @@
 		"cache"
 	],
 	"license": "MIT",
-	"version": "2.1.2",
+	"version": "2.1.3",
 	"author": "Obelism <hello@obelism.studio> (https://www.obelism.studio)",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Obelism/react-svg"
 	},
-	"types": "./dist/index.d.ts",
 	"main": "./dist/index.cjs",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"require": "./dist/index.cjs",
-			"import": "./dist/index.mjs"
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs"
 		}
 	},
 	"files": [
 		"dist"
 	],
 	"scripts": {
-		"dev": "bunchee ./src/index.ts -w",
-		"build": "bunchee ./src/index.ts",
-		"format": "prettier --write --ignore-unknown .",
-		"preview": "vite preview",
+		"dev": "bunchee -w",
+		"build": "bunchee",
 		"test": "vitest",
-		"test:ui": "vitest --ui",
-		"test:coverage": "vitest run --coverage",
-		"test:ci": "vitest run"
+		"test:ci": "vitest run",
+		"lint": "biome check",
+		"lint:fix": "biome check --fix",
+		"format": "biome format --write"
 	},
 	"peerDependencies": {
 		"react": ">=17.0.0",
 		"swr": ">=2.0.0"
 	},
 	"devDependencies": {
-		"@testing-library/react": "^14.0.0",
-		"@types/node": "^20.8.7",
-		"@types/react": "^18.2.31",
-		"@vitejs/plugin-react": "^4.1.0",
-		"@vitest/coverage-c8": "^0.33.0",
-		"bunchee": "^3.1.1",
-		"eslint": "^8.51.0",
-		"jsdom": "^22.0.0",
-		"prettier": "^3.0.3",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
+		"@biomejs/biome": "^2.3.8",
+		"@testing-library/react": "^16.3.0",
+		"@types/node": "^22.19.1",
+		"@types/react": "^19.2.7",
+		"@vitejs/plugin-react": "^5.1.1",
+		"bunchee": "^6.6.2",
+		"jsdom": "^27.2.0",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0",
 		"ts-node": "^10.9.1",
 		"tslib": "^2.6.2",
 		"typescript": "^5.0.4",
-		"vitest": "^0.34.6"
+		"vitest": "^4.0.14"
 	}
 }

@@ -1,27 +1,31 @@
-import {
+import type {
 	SvgConfig,
-	SvgMap,
-	SvgRendererProps,
-	SvgRenderer,
-	SvgRenderMap,
 	SvgElementArgs,
-} from './config/types'
+	SvgMap,
+	SvgRenderer,
+	SvgRendererProps,
+	SvgRenderMap,
+} from "./config/types"
 
-import { getSvgIdGenerator } from './functions/getSvgIdGenerator'
+import { getSvgIdGenerator } from "./functions/getSvgIdGenerator"
 
-import { svgGenerator, SvgProps, SvgElement } from './generators/svgGenerator'
 import {
-	svgProviderGenerator,
-	SvgProviderProps,
-} from './generators/svgProviderGenerator'
-import { svgImageGenerator } from './generators/svgImageGenerator'
+	type SvgElement,
+	type SvgProps,
+	svgGenerator,
+} from "./generators/svgGenerator"
 import {
+	type SvgGroup,
+	type SvgGroupProps,
 	svgGroupGenerator,
-	SvgGroupProps,
-	SvgGroup,
-} from './generators/svgGroupGenerator'
+} from "./generators/svgGroupGenerator"
+import { svgImageGenerator } from "./generators/svgImageGenerator"
+import {
+	type SvgProviderProps,
+	svgProviderGenerator,
+} from "./generators/svgProviderGenerator"
 
-export { formatSvgPath } from './functions/formatSvgPath'
+export { formatSvgPath } from "./functions/formatSvgPath"
 
 type SetupReactSvgArgs<
 	SvgMapT extends SvgMap,
@@ -37,7 +41,7 @@ type SetupReactSvgArgs<
  * @function setupReactSvg
  * @description Create the SvgProvider and Svg component based on the given arguments
  */
-const setupReactSvg = <
+export const setupReactSvg = <
 	SvgMapT extends SvgMap,
 	SvgRenderMapT extends SvgRenderMap<SvgMapT>,
 >({

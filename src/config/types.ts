@@ -30,7 +30,7 @@ export type SvgElementArgs<SvgMapT extends SvgMap> = {
 	svg: keyof SvgMapT
 	svgData: SvgConfig
 	alt: string
-	loading?: 'lazy' | 'eager'
+	loading?: "lazy" | "eager"
 	onLoad?: () => void
 	[key: string]: any
 }

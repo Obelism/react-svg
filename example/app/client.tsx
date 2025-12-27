@@ -1,7 +1,7 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { Svg } from './Svg'
+import { useState } from "react"
+import { Svg } from "./Svg"
 
 export const VercelSvg = (props: any) => {
 	const [loaded, setLoaded] = useState(false)

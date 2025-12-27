@@ -1,9 +1,10 @@
-import React, { memo } from 'react'
+import React from "react"
+import { memo } from "react"
 
-import { SvgMap } from '../config/types'
-import { GetSvgId } from '../functions/getSvgIdGenerator'
-import { SvgGroup } from './svgGroupGenerator'
-import { useLinkedSvgList } from '../functions/useSvgLoaded'
+import type { SvgMap } from "../config/types"
+import type { GetSvgId } from "../functions/getSvgIdGenerator"
+import { useLinkedSvgList } from "../functions/useSvgLoaded"
+import type { SvgGroup } from "./svgGroupGenerator"
 
 export type SvgProviderProps = {
 	children?:
@@ -22,7 +23,7 @@ export const svgProviderGenerator = <SvgMapT extends SvgMap>(
 		return (
 			<>
 				{referencedKeys.length > 0 && (
-					<svg style={{ display: 'none' }}>
+					<svg style={{ display: "none" }} aria-hidden="true">
 						<defs>
 							{referencedKeys.map((svg) => (
 								<SvgGroup key={svg} id={getSvgId(svg)} svg={svg} />
@@ -36,7 +37,7 @@ export const svgProviderGenerator = <SvgMapT extends SvgMap>(
 		)
 	})
 
-	Provider.displayName = 'SvgProvider'
+	Provider.displayName = "SvgProvider"
 
 	return Provider
 }

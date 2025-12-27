@@ -1,16 +1,12 @@
 export {
 	SvgConfig,
-	SvgMap,
-	SvgRendererProps,
-	SvgRenderer,
 	SvgElementArgs,
+	SvgMap,
+	SvgRenderer,
+	SvgRendererProps,
 	SvgRenderMap,
-} from './config/types'
-
-export { SvgProps, SvgElement } from './generators/svgGenerator'
-
-export { SvgGroupProps, SvgGroup } from './generators/svgGroupGenerator'
-
-export { SvgImage } from './generators/svgImageGenerator'
-
-export { SvgProviderProps } from './generators/svgProviderGenerator'
+} from "./config/types"
+export { SvgElement, SvgProps } from "./generators/svgGenerator"
+export { SvgGroup, SvgGroupProps } from "./generators/svgGroupGenerator"
+export { SvgImage } from "./generators/svgImageGenerator"
+export { SvgProviderProps } from "./generators/svgProviderGenerator"

@@ -1,4 +1,4 @@
-const DEFAULT_PREFIX = '_RI'
+const DEFAULT_PREFIX = "_RI"
 
 export type GetSvgId = (a: string) => string
 

@@ -1,20 +1,20 @@
-import React, { memo, useEffect, useRef } from 'react'
+import React from "react"
+import { memo, useEffect, useRef } from "react"
 
-import { SvgMap, SvgRenderMap } from '../config/types'
-
-import { GetSvgId } from '../functions/getSvgIdGenerator'
-import { SvgGroup } from './svgGroupGenerator'
-import { SvgImage } from './svgImageGenerator'
-import { formatSvgViewBox } from '../functions/formatSvgViewBox'
-import { useLinkSvg, useLinkedSvgLoaded } from '../functions/useSvgLoaded'
+import type { SvgMap, SvgRenderMap } from "../config/types"
+import { formatSvgViewBox } from "../functions/formatSvgViewBox"
+import type { GetSvgId } from "../functions/getSvgIdGenerator"
+import { useLinkedSvgLoaded, useLinkSvg } from "../functions/useSvgLoaded"
+import type { SvgGroup } from "./svgGroupGenerator"
+import type { SvgImage } from "./svgImageGenerator"
 
 export type SvgProps<
 	SvgMapT extends SvgMap,
 	SvgRenderMapT extends SvgRenderMap<SvgMapT>,
 > = {
-	type: 'link' | 'inline' | 'external' | keyof SvgRenderMapT
+	type: "link" | "inline" | "external" | keyof SvgRenderMapT
 	svg: keyof SvgMapT
-	loading?: 'lazy' | 'eager'
+	loading?: "lazy" | "eager"
 	className?: string
 	onLoad?: () => void
 	[x: string]: any
@@ -34,7 +34,7 @@ export type SvgElement<
 const BaseSvg = ({ svgData, alt, children, ...rest }: any) => {
 	return (
 		<svg {...rest} viewBox={formatSvgViewBox(svgData)} xmlSpace="preserve">
-			{(alt || svgData.alt) && <title>{alt || svgData.alt}</title>}
+			<title>{alt || svgData.alt}</title>
 			{children}
 		</svg>
 	)
@@ -61,14 +61,14 @@ export const svgGenerator = <
 		svg,
 		onLoad,
 		...rest
-	}: Omit<SvgProps<SvgMapT, SvgRenderMapT>, 'type'>) => {
+	}: Omit<SvgProps<SvgMapT, SvgRenderMapT>, "type">) => {
 		const loaded = useRef<boolean>(false)
 
 		useEffect(() => {
 			if (!onLoad || loaded.current) return
 			loaded.current = true
 			onLoad()
-		}, [])
+		}, [onLoad])
 
 		return (
 			<BaseSvg {...rest} svgData={svgData} alt={alt} onLoad={onLoad}>
@@ -84,7 +84,7 @@ export const svgGenerator = <
 		svg,
 		onLoad,
 		...rest
-	}: Omit<SvgProps<SvgMapT, SvgRenderMapT>, 'type'>) => {
+	}: Omit<SvgProps<SvgMapT, SvgRenderMapT>, "type">) => {
 		const loaded = useLinkedSvgLoaded(String(svg))
 
 		useEffect(() => {
@@ -101,7 +101,7 @@ export const svgGenerator = <
 
 	const Svg = memo(
 		({
-			type = 'link',
+			type = "link",
 			svg,
 			alt,
 			loading,
@@ -111,14 +111,14 @@ export const svgGenerator = <
 			const linkSvg = useLinkSvg()
 
 			useEffect(() => {
-				if (type !== 'link') return
+				if (type !== "link") return
 				linkSvg(String(svg))
-			}, [linkSvg, svg])
+			}, [linkSvg, svg, type])
 
 			const svgData = svgMap[svg]
 
 			if (!svgData) {
-				if (process.env.NODE_ENV !== 'production') {
+				if (process.env.NODE_ENV !== "production") {
 					console.error(
 						`SvgProvider - Unknown svg provided; "${String(
 							svg,
@@ -128,9 +128,9 @@ export const svgGenerator = <
 				return null
 			}
 
-			const folder = rootFolder || ''
+			const folder = rootFolder || ""
 
-			if (type === 'inline') {
+			if (type === "inline") {
 				return (
 					<InlineSvg
 						{...rest}
@@ -143,7 +143,7 @@ export const svgGenerator = <
 				)
 			}
 
-			if (type === 'link') {
+			if (type === "link") {
 				return (
 					<LinkedSvg
 						{...rest}
@@ -156,7 +156,7 @@ export const svgGenerator = <
 				)
 			}
 
-			if (type === 'external') {
+			if (type === "external") {
 				return (
 					<SvgImage
 						{...rest}
@@ -189,7 +189,7 @@ export const svgGenerator = <
 		},
 	)
 
-	Svg.displayName = 'Svg'
+	Svg.displayName = "Svg"
 
 	return Svg
 }
