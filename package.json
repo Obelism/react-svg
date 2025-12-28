@@ -13,7 +13,7 @@
 	"author": "Obelism <hello@obelism.studio> (https://www.obelism.studio)",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Obelism/react-svg"
+		"url": "https://github.com/obelism/react-svg"
 	},
 	"main": "./dist/index.cjs",
 	"exports": {
