@@ -17,6 +17,7 @@ export const svgProviderGenerator = <SvgMapT extends SvgMap>(
 	getSvgId: GetSvgId,
 ) => {
 	const Provider = memo(({ children }: SvgProviderProps) => {
+		const Ctx = { getSvgId, SvgGroup }
 		const [linkedSvgList] = useLinkedSvgList()
 		const referencedKeys = linkedSvgList ? Object.keys(linkedSvgList) : []
 
@@ -26,7 +27,7 @@ export const svgProviderGenerator = <SvgMapT extends SvgMap>(
 					<svg style={{ display: "none" }} aria-hidden="true">
 						<defs>
 							{referencedKeys.map((svg) => (
-								<SvgGroup key={svg} id={getSvgId(svg)} svg={svg} />
+								<Ctx.SvgGroup key={svg} id={Ctx.getSvgId(svg)} svg={svg} />
 							))}
 						</defs>
 					</svg>

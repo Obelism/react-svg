@@ -5,6 +5,7 @@ import { Svg } from "./Svg"
 
 export const VercelSvg = (props: any) => {
 	const [loaded, setLoaded] = useState(false)
+	console.log("loaded", loaded)
 	return (
 		<Svg
 			{...props}

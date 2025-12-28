@@ -117,6 +117,7 @@
 	width: 100%;
 	max-width: 5rem;
 	transition: opacity 0.4s ease-in-out;
+	color: rgb(var(--foreground-rgb));
 }
 
 /* Enable hover only on non-touch devices */
@@ -222,10 +223,6 @@
 }
 
 @media (prefers-color-scheme: dark) {
-	.vercelLogo {
-		filter: invert(1);
-	}
-
 	.logo {
 		filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
 	}

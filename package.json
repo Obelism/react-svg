@@ -28,7 +28,7 @@
 	],
 	"scripts": {
 		"dev": "bunchee -w",
-		"build": "bunchee",
+		"build": "bunchee --minify --sourcemap=false",
 		"test": "vitest",
 		"test:ci": "vitest run",
 		"lint": "biome check",
