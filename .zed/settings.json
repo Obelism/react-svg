@@ -1,0 +1,32 @@
+{
+	"languages": {
+		"TypeScript": {
+			"formatter": "language_server",
+			"language_servers": ["biome", "..."],
+		},
+		"TSX": {
+			"formatter": "language_server",
+			"language_servers": ["biome", "..."],
+		},
+		"JavaScript": {
+			"formatter": "language_server",
+			"language_servers": ["biome", "..."],
+		},
+		"JSON": {
+			"formatter": "language_server",
+			"language_servers": ["biome", "..."],
+		},
+		"CSS": {
+			"formatter": "language_server",
+			"language_servers": ["biome", "..."],
+		},
+	},
+	"lsp": {
+		"biome": {
+			"settings": {
+				"require_config_file": true,
+			},
+		},
+	},
+	"format_on_save": "on",
+}

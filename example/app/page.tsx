@@ -1,6 +1,6 @@
-import { VercelSvg } from './client'
-import styles from './page.module.css'
-import { Svg } from './Svg'
+import { VercelSvg } from "./client"
+import styles from "./page.module.css"
+import { Svg } from "./Svg"
 
 export default function Home() {
 	return (
@@ -23,7 +23,7 @@ export default function Home() {
 			</div>
 
 			<div className={styles.center}>
-				<Svg className={styles.logo} svg="next" type="externalLink" />
+				<Svg className={styles.logo} svg="next" type="external" />
 			</div>
 
 			<div className={styles.grid}>

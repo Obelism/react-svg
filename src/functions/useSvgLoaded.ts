@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react'
-import useSWR, { KeyedMutator } from 'swr'
+import { useCallback, useMemo } from "react"
+import useSWR, { type KeyedMutator } from "swr"
 
 const useSharedState = <TData = unknown>(
 	key: string,
@@ -9,7 +9,7 @@ const useSharedState = <TData = unknown>(
 	return [data, mutate]
 }
 
-const SHARED_STATE_PREFIX = 'obelism-react-svg'
+const SHARED_STATE_PREFIX = "obelism-react-svg"
 
 const INITIAL_LINKED_SVG_LIST: Record<string, boolean> = {}
 
@@ -29,7 +29,7 @@ export const useLinkSvg = () => {
 				[svg]: true,
 			})
 		},
-		[linkedSvgList],
+		[linkedSvgList, setLinkedSvgList],
 	)
 }
 

@@ -12,14 +12,21 @@
 		"noUnusedParameters": true,
 		"strictBindCallApply": true,
 		"outDir": "./dist",
-		"rootDir": "./",
+		"rootDir": "./src",
 		"strict": true,
 		"target": "ES2018",
 		"baseUrl": "./src",
 		"noEmitOnError": true,
 		"incremental": true
 	},
-	"exclude": ["./**/dist", "examples"],
+	"exclude": [
+		"./**/dist",
+		"examples",
+		"example",
+		"tests",
+		"vitest.config.ts",
+		"build.mjs"
+	],
 	"watchOptions": {
 		"watchFile": "useFsEvents",
 		"watchDirectory": "useFsEvents",

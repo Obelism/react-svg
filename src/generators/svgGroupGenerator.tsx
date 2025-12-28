@@ -1,12 +1,12 @@
-import React, { memo } from 'react'
-import useSWR from 'swr'
+import React from "react"
+import { memo } from "react"
+import useSWR from "swr"
+import { SWRConfig } from "../config/SWRConfig"
+import type { SvgMap } from "../config/types"
 
-import { SvgMap } from '../config/types'
-import { SWRConfig } from '../config/SWRConfig'
-
-import { formatSvgPath } from '../functions/formatSvgPath'
-import { svgFetcher } from '../functions/svgFetcher'
-import { useSetLinkedSvgLoaded } from '../functions/useSvgLoaded'
+import { formatSvgPath } from "../functions/formatSvgPath"
+import { svgFetcher } from "../functions/svgFetcher"
+import { useSetLinkedSvgLoaded } from "../functions/useSvgLoaded"
 
 export type SvgGroupProps<SvgMapT extends SvgMap> = {
 	svg: keyof SvgMapT
@@ -34,7 +34,7 @@ export const svgGroupGenerator = <SvgMapT extends SvgMap>(
 		return <g {...rest} dangerouslySetInnerHTML={{ __html: data }} />
 	})
 
-	SvgGroup.displayName = 'SvgGroup'
+	SvgGroup.displayName = "SvgGroup"
 
 	return SvgGroup
 }
