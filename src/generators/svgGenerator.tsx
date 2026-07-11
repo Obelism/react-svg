@@ -17,6 +17,7 @@ export type SvgProps<
 	loading?: "lazy" | "eager"
 	className?: string
 	onLoad?: () => void
+	// biome-ignore lint/suspicious/noExplicitAny: pass-through bag spread onto arbitrary host/custom elements; unknown breaks JSX spreading (verified via tsc)
 	[x: string]: any
 }
 
@@ -51,6 +52,7 @@ export const svgGenerator = <
 	SvgGroup: SvgGroup<SvgMapT>,
 	getSvgId: GetSvgId,
 	SvgImage: SvgImage<SvgMapT>,
+	namespace: string,
 	rootFolder?: string,
 	svgRendererMap?: SvgRenderMapT,
 ): React.MemoExoticComponent<SvgElement<SvgMapT, SvgRenderMapT>> => {
@@ -85,7 +87,7 @@ export const svgGenerator = <
 		onLoad,
 		...rest
 	}: Omit<SvgProps<SvgMapT, SvgRenderMapT>, "type">) => {
-		const loaded = useLinkedSvgLoaded(String(svg))
+		const loaded = useLinkedSvgLoaded(namespace, String(svg))
 
 		useEffect(() => {
 			if (!onLoad || !loaded) return
@@ -108,7 +110,7 @@ export const svgGenerator = <
 			onLoad,
 			...rest
 		}: SvgProps<SvgMapT, SvgRenderMapT>) => {
-			const linkSvg = useLinkSvg()
+			const linkSvg = useLinkSvg(namespace)
 
 			useEffect(() => {
 				if (type !== "link") return

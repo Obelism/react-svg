@@ -13,12 +13,20 @@ const SHARED_STATE_PREFIX = "obelism-react-svg"
 
 const INITIAL_LINKED_SVG_LIST: Record<string, boolean> = {}
 
-export const useLinkedSvgList = () =>
-	useSharedState(`${SHARED_STATE_PREFIX}-linked`, INITIAL_LINKED_SVG_LIST)
+/**
+ * `namespace` scopes the shared SWR cache keys to a single setupReactSvg()
+ * instance, so two instances mounted in the same app don't read/write each
+ * other's linked-svg state.
+ */
+export const useLinkedSvgList = (namespace: string) =>
+	useSharedState(
+		`${SHARED_STATE_PREFIX}-${namespace}-linked`,
+		INITIAL_LINKED_SVG_LIST,
+	)
 
-export const useLinkSvg = () => {
+export const useLinkSvg = (namespace: string) => {
 	const [linkedSvgList = INITIAL_LINKED_SVG_LIST, setLinkedSvgList] =
-		useLinkedSvgList()
+		useLinkedSvgList(namespace)
 
 	return useCallback(
 		(svg: string) => {
@@ -34,17 +42,18 @@ export const useLinkSvg = () => {
 }
 
 const useLinkedSvg = (
+	namespace: string,
 	svg: string,
 ): [boolean | undefined, KeyedMutator<boolean>] => {
-	return useSharedState(`${SHARED_STATE_PREFIX}-${svg}`, false)
+	return useSharedState(`${SHARED_STATE_PREFIX}-${namespace}-${svg}`, false)
 }
 
-export const useLinkedSvgLoaded = (svg: string) => {
-	return useLinkedSvg(svg)?.at(0)
+export const useLinkedSvgLoaded = (namespace: string, svg: string) => {
+	return useLinkedSvg(namespace, svg)?.at(0)
 }
 
-export const useSetLinkedSvgLoaded = (svg: string) => {
-	const [svgLoaded, setSvgLoaded] = useLinkedSvg(svg)
+export const useSetLinkedSvgLoaded = (namespace: string, svg: string) => {
+	const [svgLoaded, setSvgLoaded] = useLinkedSvg(namespace, svg)
 
 	return useMemo(() => {
 		if (svgLoaded) return () => {}

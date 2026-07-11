@@ -1,13 +1,12 @@
 import React from "react"
 import { memo, useEffect, useRef } from "react"
-import type { JSX } from "react/jsx-dev-runtime"
 
 import type { SvgElementArgs, SvgMap } from "../config/types"
 
 import { formatSvgPath } from "../functions/formatSvgPath"
 
 export type SvgImage<SvgMapT extends SvgMap> = React.MemoExoticComponent<
-	(args: SvgElementArgs<SvgMapT>) => JSX.Element | null
+	(args: SvgElementArgs<SvgMapT>) => React.JSX.Element | null
 >
 
 export const svgImageGenerator = <

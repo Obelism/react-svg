@@ -7,7 +7,10 @@ import type {
 	SvgRenderMap,
 } from "./config/types"
 
-import { getSvgIdGenerator } from "./functions/getSvgIdGenerator"
+import {
+	getSvgIdGenerator,
+	resolveIdPrefix,
+} from "./functions/getSvgIdGenerator"
 
 import {
 	type SvgElement,
@@ -50,17 +53,19 @@ export const setupReactSvg = <
 	idPrefix,
 	svgRenderers,
 }: SetupReactSvgArgs<SvgMapT, SvgRenderMapT>) => {
+	const namespace = resolveIdPrefix(idPrefix)
 	const getSvgId = getSvgIdGenerator(idPrefix)
-	const SvgGroup = svgGroupGenerator<SvgMapT>(svgMap, rootFolder)
+	const SvgGroup = svgGroupGenerator<SvgMapT>(svgMap, namespace, rootFolder)
 	const SvgImage = svgImageGenerator<SvgMapT>()
 
 	return {
-		SvgProvider: svgProviderGenerator<SvgMapT>(SvgGroup, getSvgId),
+		SvgProvider: svgProviderGenerator<SvgMapT>(SvgGroup, getSvgId, namespace),
 		Svg: svgGenerator<SvgMapT, SvgRenderMapT>(
 			svgMap,
 			SvgGroup,
 			getSvgId,
 			SvgImage,
+			namespace,
 			rootFolder,
 			svgRenderers,
 		),
