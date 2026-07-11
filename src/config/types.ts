@@ -32,5 +32,6 @@ export type SvgElementArgs<SvgMapT extends SvgMap> = {
 	alt: string
 	loading?: "lazy" | "eager"
 	onLoad?: () => void
+	// biome-ignore lint/suspicious/noExplicitAny: pass-through bag spread onto arbitrary host/custom elements; unknown breaks JSX spreading (verified via tsc)
 	[key: string]: any
 }

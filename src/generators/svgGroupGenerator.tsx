@@ -10,6 +10,7 @@ import { useSetLinkedSvgLoaded } from "../functions/useSvgLoaded"
 
 export type SvgGroupProps<SvgMapT extends SvgMap> = {
 	svg: keyof SvgMapT
+	// biome-ignore lint/suspicious/noExplicitAny: pass-through bag spread onto <g>; unknown breaks JSX spreading (verified via tsc)
 	[x: string]: any
 }
 
@@ -19,10 +20,11 @@ export type SvgGroup<SvgMapT extends SvgMap> = React.MemoExoticComponent<
 
 export const svgGroupGenerator = <SvgMapT extends SvgMap>(
 	svgMap: SvgMapT,
+	namespace: string,
 	rootFolder?: string,
 ) => {
 	const SvgGroup = memo(({ svg, ...rest }: SvgGroupProps<SvgMapT>) => {
-		const setLinkedSvgLoaded = useSetLinkedSvgLoaded(String(svg))
+		const setLinkedSvgLoaded = useSetLinkedSvgLoaded(namespace, String(svg))
 		const { data, error } = useSWR(
 			svgMap[svg].path || formatSvgPath<SvgMapT>(svg, rootFolder),
 			svgFetcher,

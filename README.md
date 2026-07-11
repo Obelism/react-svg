@@ -187,6 +187,10 @@ Specifically for when using `external`. This library relies on the [loading](htt
 
 ## Notes
 
+### Security
+
+The `link` and `inline` render types fetch the raw SVG file contents and insert them into the DOM as markup (needed to make `fill`/`stroke` etc. controllable via CSS, and to support `<use>` references). Only point `svgMap` paths / `rootFolder` at SVGs you control and trust (bundled assets, your own CDN) — never at user-uploaded or otherwise untrusted SVG content, since a malicious SVG can include `<script>` tags or event handler attributes. The `external` render type (a plain `<img>`) does not have this risk, since browsers don't execute scripts inside image-loaded SVGs.
+
 ### Types
 
 Because the components are generated within your codebase based on your configuration the package can't expose types for you. However you can use Typescript to generate them.

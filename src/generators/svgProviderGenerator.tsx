@@ -15,10 +15,11 @@ export type SvgProviderProps = {
 export const svgProviderGenerator = <SvgMapT extends SvgMap>(
 	SvgGroup: SvgGroup<SvgMapT>,
 	getSvgId: GetSvgId,
+	namespace: string,
 ) => {
 	const Provider = memo(({ children }: SvgProviderProps) => {
 		const Ctx = { getSvgId, SvgGroup }
-		const [linkedSvgList] = useLinkedSvgList()
+		const [linkedSvgList] = useLinkedSvgList(namespace)
 		const referencedKeys = linkedSvgList ? Object.keys(linkedSvgList) : []
 
 		return (
