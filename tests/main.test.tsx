@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest"
 import setupReactSvg, { formatSvgPath } from "../dist/index.mjs"
 
 describe("setupReactSvg", () => {
-	const { Svg, SvgProvider } = setupReactSvg({
+	const { Svg, SvgProvider, getSvgUrl } = setupReactSvg({
 		idPrefix: "🧪",
 		rootFolder: "/path/to",
 		svgMap: {
@@ -12,6 +12,12 @@ describe("setupReactSvg", () => {
 				height: 16,
 				width: 9,
 				alt: "Icon",
+			},
+			iconWithPath: {
+				path: "/custom/place/icon.svg",
+				height: 16,
+				width: 9,
+				alt: "Icon with path",
 			},
 		},
 		svgRenderers: {
@@ -104,5 +110,18 @@ describe("setupReactSvg", () => {
 		const use = container.querySelector("#customElement")
 		expect(!!use).toBe(true)
 		cleanup()
+	})
+
+	it("getSvgUrl falls back to rootFolder", () => {
+		expect(getSvgUrl("icon")).toBe("/path/to/icon.svg")
+	})
+
+	it("getSvgUrl uses the per-entry path override", () => {
+		expect(getSvgUrl("iconWithPath")).toBe("/custom/place/icon.svg")
+	})
+
+	it("getSvgUrl throws for an unknown svg key", () => {
+		// @ts-expect-error - intentionally an invalid key to test the runtime guard
+		expect(() => getSvgUrl("doesNotExist")).toThrow(/Unknown svg provided/)
 	})
 })

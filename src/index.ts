@@ -11,6 +11,10 @@ import {
 	getSvgIdGenerator,
 	resolveIdPrefix,
 } from "./functions/getSvgIdGenerator"
+import {
+	type GetSvgUrl,
+	getSvgUrlGenerator,
+} from "./functions/getSvgUrlGenerator"
 
 import {
 	type SvgElement,
@@ -69,6 +73,7 @@ export const setupReactSvg = <
 			rootFolder,
 			svgRenderers,
 		),
+		getSvgUrl: getSvgUrlGenerator<SvgMapT>(svgMap, rootFolder),
 	}
 }
 
@@ -85,6 +90,7 @@ export type {
 	SvgProviderProps,
 	SvgGroupProps,
 	SvgGroup,
+	GetSvgUrl,
 }
 
 export default setupReactSvg

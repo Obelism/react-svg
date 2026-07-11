@@ -181,6 +181,14 @@ Key of the SVF to be rendered. This value needs to match up with a key you passe
 
 Specifically for when using `external`. This library relies on the [loading](https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading#images_and_iframes) attribute for images. The default behavior that we pass is `lazy`. For above the fold SVGs it's recommended to use `eager`.
 
+### getSvgUrl
+
+```ts
+getSvgUrl('arrowBack') // => '/SVGs/arrow-back.svg'
+```
+
+Resolves the same URL this library itself would fetch for a given `svg` key — the entry's `path` if set, otherwise `rootFolder` plus the generated filename. Useful anywhere you need the raw URL outside of a `Svg` component, e.g. to [preload a critical icon](#preloading-critical-icons). Throws if the key isn't in `svgMap`.
+
 ## Why?
 
 ✨ SVGs are awesome ✨. However using them in React can be a crappy experience without the right tools. Changing every `fill-rule` to `fillRule` is not that fun. And at the same time this adds bundle size and increases the initial document when using SSG or SSG. But sometimes you do need that flexibility for animations. The goal with this library is to load SVGs in the most performant way and giving the flexibility to switch without having to refactor a lot. To keep the API minimal the functionality is also limited, for full control options like [react-svg](https://www.npmjs.com/package/react-svg) might be a better fit.
@@ -190,6 +198,38 @@ Specifically for when using `external`. This library relies on the [loading](htt
 ### Security
 
 The `link` and `inline` render types fetch the raw SVG file contents and insert them into the DOM as markup (needed to make `fill`/`stroke` etc. controllable via CSS, and to support `<use>` references). Only point `svgMap` paths / `rootFolder` at SVGs you control and trust (bundled assets, your own CDN) — never at user-uploaded or otherwise untrusted SVG content, since a malicious SVG can include `<script>` tags or event handler attributes. The `external` render type (a plain `<img>`) does not have this risk, since browsers don't execute scripts inside image-loaded SVGs.
+
+### Preloading critical icons
+
+For the `link` and `inline` types, the SVG content is always fetched over the network before there's anything to paint — so an above-the-fold icon (a logo, a nav icon) can show up empty for a moment on a cold page load while that fetch resolves. Thanks to the SWR cache (`revalidateIfStale: false`), this only affects the *first* time a given icon is requested in a browser session — every later mount of that same icon resolves from cache instantly.
+
+To avoid the empty first paint for a specific icon, warm the browser's HTTP cache before this library requests it, using a preload link tag. Use [`getSvgUrl`](#getsvgurl) to build the `href` so it always matches whatever this library actually fetches, instead of hand-writing (and potentially drifting from) the path yourself:
+
+```tsx
+<link rel="preload" as="fetch" crossOrigin="anonymous" href={getSvgUrl('logo')} />
+```
+
+The `crossOrigin` attribute is required, even for same-origin paths — `fetch()` always makes a CORS request, and the browser will only reuse a preload for a matching request mode. Without it the preload is fetched but ignored, and this library's `fetch()` call re-requests it.
+
+In a Next.js App Router layout, render the tag directly (Next hoists `<link>` rendered from a server component into `<head>`):
+
+```tsx
+// app/layout.tsx
+import { getSvgUrl } from "./Svg"
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+	return (
+		<html>
+			<head>
+				<link rel="preload" as="fetch" crossOrigin="anonymous" href={getSvgUrl('logo')} />
+			</head>
+			<body>{children}</body>
+		</html>
+	)
+}
+```
+
+Only do this for a handful of critical, above-the-fold icons — preloading everything defeats the point of `link`/`inline` lazily fetching icons on demand. For a purely instant first paint regardless of caching, `type="external"` (a plain `<img>`) avoids the JS fetch step entirely, since the browser's preload scanner can pick it up on its own.
 
 ### Types
 
@@ -212,11 +252,14 @@ Because this library uses context and client fetching both the provider and Svg 
 
 import setupReactSvg from "@obelism/react-svg";
 
-const { SvgProvider: Provider, Svg: SvgComponent } = setupReactSvg({ ... });
+const { SvgProvider: Provider, Svg: SvgComponent, getSvgUrl: getUrl } = setupReactSvg({ ... });
 
 export const SvgProvider = Provider;
 export const Svg = SvgComponent;
+export const getSvgUrl = getUrl;
 ```
+
+`getSvgUrl` itself doesn't use any client-only APIs, so it's safe to import from a server component (e.g. a root layout) even though it's re-exported from a `"use client"` file.
 
 ## Dependencies
 
