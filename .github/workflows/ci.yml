@@ -1,0 +1,49 @@
+name: CI
+
+on:
+    pull_request:
+    push:
+        branches: [main]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    verify:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+
+            - name: Install
+              run: npm ci
+
+            - name: Lint
+              run: npm run lint
+
+            # Build before test: the suite imports the built package, so what
+            # gets verified is what gets published.
+            - name: Build
+              run: npm run build
+
+            - name: Test
+              run: npm run test:ci
+
+            # The examples are the only place a real server/client boundary is
+            # exercised. A misplaced "use client" or an unserializable config
+            # fails here and nowhere else.
+            - name: Build the Next example
+              run: npm ci && npm run build
+              working-directory: examples/next
+
+            - name: Build the Waku example
+              run: npm ci && npm run build
+              working-directory: examples/waku

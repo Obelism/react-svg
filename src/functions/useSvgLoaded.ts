@@ -1,3 +1,5 @@
+"use client"
+
 import { useCallback, useMemo } from "react"
 import useSWR, { type KeyedMutator } from "swr"
 

@@ -23,9 +23,10 @@ The concept is to provide a minimal API to render SVGs without needing to conver
 ## Quick start
 
 ```ts
+// app/svg-config.ts — an ordinary module, no "use client" needed
 import setupReactSvg from '@obelism/react-svg'
 
-export const { SvgProvider, Svg } = setupReactSvg({
+export const { SvgProvider, Svg, config } = setupReactSvg({
 	svgMap: {
 		arrowBack: {
 			path: '/SVGs/arrow-back.svg',
@@ -39,10 +40,14 @@ export const { SvgProvider, Svg } = setupReactSvg({
 })
 ```
 
-In the initialization there needs to be an object of all SVGs that you support. This is a key/value object with path, viewbox info and alt tag. This gives you back two components. The `SvgProvider` needs to wrap all places where the `Svg` component is going to be used. Then when using the SVG component you provide the SVG to be shown, and the way it needs to be loaded; `link`, `external` or `inline`.
+In the initialization there needs to be an object of all SVGs that you support. This is a key/value object with path, viewbox info and alt tag. This gives you back the two components, the resolved `config`, and [`getSvgUrl`](#getsvgurl).
+
+Nothing is created here — `setupReactSvg` hands back the components this package already exports, narrowed to your svg map. That is what lets this file stay server-safe: it holds plain data, so a server component can import from it, and only the components themselves cross into the browser.
+
+Pass the `config` to the provider, and it reaches every `Svg` below it. Then on each SVG you say which one to show and how to load it; `link`, `external` or `inline`.
 
 ```tsx
-<SvgProvider>
+<SvgProvider config={config}>
     <header>
         <a href='/previous'>
             <Svg type="link" svg='arrowBack' />
@@ -65,23 +70,29 @@ In the initialization there needs to be an object of all SVGs that you support. 
             Next article
         </a>
     </footer>
-<SvgProvider>
+</SvgProvider>
 ```
+
+Upgrading from v2? See [migrating to v3](#migrating-to-v3).
 
 ## API
 
-This library consist of three parts; the generator which gives you a provider and a consumer.
+This library consist of three parts; a provider, a consumer and the setup that binds both to your configuration.
 
 ### setupReactSvg
 
 ```ts
-export const { SvgProvider, Svg } = setupReactSvg({
+export const { SvgProvider, Svg, getSvgUrl } = setupReactSvg({
     svgMap: {...},
     rootFolder: "/images/icons",
-    idPrefix: "🦦",
+    namespace: "🦦",
     svgRenderers: {...}
 })
 ```
+
+`setupReactSvg` creates nothing. It returns the very same `Svg` and `SvgProvider` this package exports, narrowed to one svg map so your keys and custom render types autocomplete without repeating the configuration at every call site. Next to the two components it returns [`getSvgUrl`](#getsvgurl) and the resolved `config`, which the provider needs and which you can hand to any component yourself (see [using the components directly](#using-the-components-directly)).
+
+Because it only narrows types, the components stay ordinary module exports — which is what keeps them usable across the React server component boundary. See [React server components](#react-server-components--nextjs-app-router--waku).
 
 Accepted arguments;
 
@@ -121,11 +132,11 @@ rootFolder: "/images/icons",
 
 When having most SVGs in the same folder this feature can be used skip having to set a path for each SVG. For example when setting this value to; `/images/icons`. It would automatically generate the path for the `arrowBack` like this; `/images/icons/arowBack.svg`.
 
-#### idPrefix
+#### namespace
 
 ```ts
 ...
-idPrefix: "🦦",
+namespace: "🦦",
 ...
 ```
 
@@ -150,10 +161,14 @@ svgRenderers: {
 ### SvgProvider
 
 ```tsx
-<SvgProvider />
+<SvgProvider config={config} />
 ```
 
-This is the provider that keeps track of the context for the Svgs that use the `type="link"`. This contains the context provider and a hidden SVG that has the SVG `<defs>`. If you're only using the `inline` and `external` this provider could be skipped.
+This is the provider that keeps track of the context for the Svgs that use the `type="link"`. This contains the context provider and a hidden SVG that has the SVG `<defs>`.
+
+`config` is required and is the only prop besides `children`. Take it from `setupReactSvg`, or build one with [`createSvgConfig`](#using-the-components-directly). Build it once, at module scope — a config created inline is a new object on every render, and every `Svg` below the provider re-renders with it.
+
+If you're only using `inline` and `external` you can skip the provider entirely and pass `config` straight to each `Svg`, though see the cost noted in [using the components directly](#using-the-components-directly).
 
 ### Svg
 
@@ -189,6 +204,42 @@ getSvgUrl('arrowBack') // => '/SVGs/arrow-back.svg'
 
 Resolves the same URL this library itself would fetch for a given `svg` key — the entry's `path` if set, otherwise `rootFolder` plus the generated filename. Useful anywhere you need the raw URL outside of a `Svg` component, e.g. to [preload a critical icon](#preloading-critical-icons). Throws if the key isn't in `svgMap`.
 
+### Using the components directly
+
+`Svg` and `SvgProvider` are plain React components, exported from the package. `setupReactSvg` is a convenience on top of them, not a requirement — build the config yourself with `createSvgConfig` and everything below the provider works the same:
+
+```tsx
+import { createSvgConfig, resolveSvgUrl, Svg, SvgProvider } from '@obelism/react-svg'
+
+const SVG_MAP = {
+	arrowBack: { path: '/SVGs/arrow-back.svg', width: 800, height: 800, alt: 'Back arrow' },
+}
+
+export const svgConfig = createSvgConfig({ svgMap: SVG_MAP, rootFolder: '/images/icons' })
+
+const App = () => (
+	<SvgProvider config={svgConfig}>
+		<Svg svg="arrowBack" type="link" />
+	</SvgProvider>
+)
+
+resolveSvgUrl(svgConfig, 'arrowBack') // => '/SVGs/arrow-back.svg'
+```
+
+Build the config at module scope, the same way you would with any other context value — the components use its identity to skip re-renders.
+
+A single `Svg` can also render with no provider at all, by taking the `config` directly:
+
+```tsx
+<Svg svg="arrowBack" type="inline" config={svgConfig} />
+```
+
+**This is an escape hatch, not the normal path.** It exists for isolated usage, tests and stories. Under React server components the config is serialized into the payload *once per element that carries it*, so a whole page of them ships your entire svg map that many times over. The provider serializes it once. Reach for the prop when there is no provider to reach for, not to avoid adding one.
+
+Both ways keep the svg keys typed; `config` is inferred, so `svg="typoo"` is still a type error.
+
+`Svg` and `SvgProvider` are the only components the package exports. The pieces each render type is built out of stay internal, so their props are free to change without a major version — a custom renderer is handed everything it needs as props, so there is nothing to reach past them for.
+
 ## Why?
 
 ✨ SVGs are awesome ✨. However using them in React can be a crappy experience without the right tools. Changing every `fill-rule` to `fillRule` is not that fun. And at the same time this adds bundle size and increases the initial document when using SSG or SSG. But sometimes you do need that flexibility for animations. The goal with this library is to load SVGs in the most performant way and giving the flexibility to switch without having to refactor a lot. To keep the API minimal the functionality is also limited, for full control options like [react-svg](https://www.npmjs.com/package/react-svg) might be a better fit.
@@ -211,29 +262,43 @@ To avoid the empty first paint for a specific icon, warm the browser's HTTP cach
 
 The `crossOrigin` attribute is required, even for same-origin paths — `fetch()` always makes a CORS request, and the browser will only reuse a preload for a matching request mode. Without it the preload is fetched but ignored, and this library's `fetch()` call re-requests it.
 
-In a Next.js App Router layout, render the tag directly (Next hoists `<link>` rendered from a server component into `<head>`):
+Under React server components, build the URL in a module *without* `"use client"` so it can actually run during the server render — see [React server components](#react-server-components--nextjs-app-router--waku):
+
+```tsx
+// app/svg-config.ts — no "use client"
+import setupReactSvg from "@obelism/react-svg"
+
+export const { SvgProvider, Svg, config, getSvgUrl } = setupReactSvg({
+	svgMap: { ... },
+	rootFolder: "/icons",
+})
+```
+
+In a React 19 tree — which includes the Next.js App Router — reach for `preload` from `react-dom` rather than rendering the tag yourself. It hoists into `<head>` and deduplicates:
 
 ```tsx
 // app/layout.tsx
-import { getSvgUrl } from "./Svg"
+import { preload } from "react-dom"
+import { getSvgUrl } from "./svg-config"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+	preload(getSvgUrl('logo'), { as: 'fetch', crossOrigin: 'anonymous' })
+
 	return (
 		<html>
-			<head>
-				<link rel="preload" as="fetch" crossOrigin="anonymous" href={getSvgUrl('logo')} />
-			</head>
 			<body>{children}</body>
 		</html>
 	)
 }
 ```
 
+Rendering a `<link rel="preload">` element by hand works too, but React emits the tag **twice** — once hoisted as a resource and once literally — so prefer `preload()` where you have it. (It renders `crossorigin=""`, which is the same anonymous state as `crossorigin="anonymous"`.)
+
 Only do this for a handful of critical, above-the-fold icons — preloading everything defeats the point of `link`/`inline` lazily fetching icons on demand. For a purely instant first paint regardless of caching, `type="external"` (a plain `<img>`) avoids the JS fetch step entirely, since the browser's preload scanner can pick it up on its own.
 
 ### Types
 
-Because the components are generated within your codebase based on your configuration the package can't expose types for you. However you can use Typescript to generate them.
+The package exports its own types — `SvgProps`, `SvgProviderProps`, `SvgEntry`, `SvgMap`, `SvgRenderer`, `SvgConfig`, and so on. Those are generic over your svg map though, so for the components bound to *your* configuration it's easiest to let Typescript read them off:
 
 ```ts
 const { SvgProvider, Svg } = setupReactSvg({ ... });
@@ -243,27 +308,118 @@ export type SvgProps = React.ComponentProps<typeof Svg>;
 
 This will then give you the type with all your provided Svg options and custom renderers.
 
-### React server components / NextJS App router
+### React server components / NextJS App router / Waku
 
-Because this library uses context and client fetching both the provider and Svg component need to be client components. The easiest way to let NextJS know these are client components is using this structure:
+The components use context and client side fetching, so they're client components. The package ships them as `"use client"` modules, which means you can import and render them straight from a server component — no wrapper module of your own needed:
 
-```ts
-"use client";
+```tsx
+// app/page.tsx — a server component
+import { Svg, SvgProvider } from "@obelism/react-svg"
+import { svgConfig } from "./svg-config"
 
-import setupReactSvg from "@obelism/react-svg";
-
-const { SvgProvider: Provider, Svg: SvgComponent, getSvgUrl: getUrl } = setupReactSvg({ ... });
-
-export const SvgProvider = Provider;
-export const Svg = SvgComponent;
-export const getSvgUrl = getUrl;
+export default function Page() {
+	return (
+		<SvgProvider config={svgConfig}>
+			<Svg svg="arrowBack" type="link" />
+		</SvgProvider>
+	)
+}
 ```
 
-`getSvgUrl` itself doesn't use any client-only APIs, so it's safe to import from a server component (e.g. a root layout) even though it's re-exported from a `"use client"` file.
+The configuration crosses the server/client boundary as a prop, so it has to be serializable. `svgMap`, `rootFolder` and `namespace` are plain data and pass through fine. `svgRenderers` are **functions**, which can't be serialized — a config that carries custom renderers has to be built inside a `"use client"` module.
+
+`createSvgConfig`, `resolveSvgUrl` and `formatSvgPath` are pure and ship outside the client boundary, so they run on either side:
+
+```ts
+// app/svg-config.ts — deliberately no "use client"
+import { createSvgConfig, resolveSvgUrl } from "@obelism/react-svg"
+
+export const SVG_MAP = { arrowBack: { width: 800, height: 800 } }
+export const svgConfig = createSvgConfig({ svgMap: SVG_MAP, rootFolder: "/icons" })
+export const getSvgUrl = (svg: keyof typeof SVG_MAP) => resolveSvgUrl(svgConfig, svg)
+```
+
+`setupReactSvg` is pure too — it resolves the config and narrows types, and creates nothing — so it belongs in the same server-safe module:
+
+```ts
+// app/svg-config.ts — deliberately no "use client"
+import setupReactSvg from "@obelism/react-svg"
+
+export const { SvgProvider, Svg, config, getSvgUrl } = setupReactSvg({
+	svgMap: { arrowBack: { width: 800, height: 800 } },
+	rootFolder: "/icons",
+})
+
+// and this now works during a server render:
+// <link rel="preload" as="fetch" href={getSvgUrl("arrowBack")} />
+```
+
+The one thing that does force a `"use client"` module is **custom renderers**, since they are functions and functions cannot be serialized across the boundary. Put the config that carries them in a client module — and note that `config` then becomes a client reference itself, so a server component can't read it. Wrap the provider in that module instead of exporting the config out of it.
+
+Do **not** re-export `getSvgUrl` from a `"use client"` module and call it in a server component. Every export of such a module becomes a client reference, and calling one during a server render throws (`It is not possible to invoke a client function from the server`). Keep the URL helpers in a server-safe module, as above. This was the main thing v2 made impossible.
+
+Two providers that share a `namespace` also share their `<defs>` ids, so give each configuration its own `namespace` when you use more than one in a page.
+
+Both patterns are exercised end to end in [`examples/next`](examples/next) and [`examples/waku`](examples/waku).
+
+## Migrating to v3
+
+v3 stops generating components. `setupReactSvg` used to build a new `Svg` and `SvgProvider` around your configuration; now it hands back the package's own components with their types narrowed. That is what lets this package own its `"use client"` boundary instead of pushing it into your code — and it is why `getSvgUrl` finally works during a server render.
+
+For most applications the upgrade is two lines.
+
+### 1. Pass the config to the provider
+
+Nothing is closed over on your behalf any more, so the provider needs the config:
+
+```diff
+- export const { SvgProvider, Svg } = setupReactSvg({ svgMap })
++ export const { SvgProvider, Svg, config } = setupReactSvg({ svgMap })
+
+- <SvgProvider>{children}</SvgProvider>
++ <SvgProvider config={config}>{children}</SvgProvider>
+```
+
+The provider no longer accepts `svgMap` / `rootFolder` / `namespace` / `svgRenderers` as separate props. Build a config with `createSvgConfig` and pass that instead.
+
+### 2. Drop `"use client"` from your config module
+
+If you added it only so `setupReactSvg` could be called, remove it — the module is now plain data and a server component can import from it. Keep it only if the module declares custom renderers.
+
+### 3. Move custom renderers into a client module
+
+Renderers are functions, and functions cannot cross the server/client boundary as serialized data. A config carrying them has to be built inside a `"use client"` module. React will tell you if you get this wrong, but the error names serialization rather than renderers, so it is worth knowing up front.
+
+### 4. `idPrefix` is now `namespace`
+
+```diff
+  setupReactSvg({
+    svgMap,
+-   idPrefix: '🦦',
++   namespace: '🦦',
+  })
+```
+
+⚠️ **This is the one change that can pass silently.** In TypeScript the old key is an excess property and you get a compile error pointing straight at it. In JavaScript nothing is raised at all: the unknown option is ignored, the namespace falls back to its default, and every generated `<defs>` id changes. Anything referencing those ids from outside the library — stylesheets, end-to-end selectors, snapshots — breaks with nothing pointing at the cause. Grep for `idPrefix` before upgrading.
+
+### 5. Renamed and removed types
+
+`SvgConfig` used to mean a single entry in your svg map; it now means the whole resolved configuration. The per-entry type is `SvgEntry`.
+
+| v2 | v3 |
+| --- | --- |
+| `SvgConfig` (one entry) | `SvgEntry` |
+| `ResolvedSvgConfig` | `SvgConfig` |
+| `SetupReactSvgArgs` | `SvgOptions` |
+| `svgData` prop on renderers | `entry` |
+
+`SvgProviderProps` also lost its second type parameter — renderers come from the config now, not from props — so `SvgProviderProps<Map, RenderMap>` becomes `SvgProviderProps<Map>`.
+
+These exports are gone, all of them internals whose props were never a designed API: `BaseSvg`, `InlineSvg`, `LinkedSvg`, `SvgGroup`, `SvgImage` and their prop types, plus `getSvgId`, `formatSvgViewBox`, `SvgConfigContext`, `useSvgConfig` and `SvgElementArgs`. Custom renderers are handed everything they need as props, so there should be nothing to reach past `Svg` and `SvgProvider` for. If you were relying on one of them, please open an issue — the absence is deliberate, but the list can grow.
 
 ## Dependencies
 
-- [react](https://www.npmjs.com/package/react) - For React.createElement, useContext and useEffect
+- [react](https://www.npmjs.com/package/react) - For the JSX runtime, useContext and useEffect
 - [swr](https://www.npmjs.com/package/swr) - Solution to fetch the SVG content and cache the response across components
 
 ## License

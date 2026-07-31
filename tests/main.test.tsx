@@ -1,11 +1,17 @@
-import { cleanup, render } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { cleanup, render, waitFor } from "@testing-library/react"
+import { describe, expect, it, vi } from "vitest"
 
-import setupReactSvg, { formatSvgPath } from "../dist/index.mjs"
+import setupReactSvg, {
+	createSvgConfig,
+	formatSvgPath,
+	resolveSvgUrl,
+	Svg,
+	SvgProvider,
+} from "../dist/index.mjs"
 
 describe("setupReactSvg", () => {
-	const { Svg, SvgProvider, getSvgUrl } = setupReactSvg({
-		idPrefix: "🧪",
+	const { Svg, SvgProvider, getSvgUrl, config } = setupReactSvg({
+		namespace: "🧪",
 		rootFolder: "/path/to",
 		svgMap: {
 			icon: {
@@ -31,7 +37,7 @@ describe("setupReactSvg", () => {
 
 	it("Image with default alt", () => {
 		const { getByAltText } = render(
-			<SvgProvider>
+			<SvgProvider config={config}>
 				<Svg type="external" svg="icon" />
 			</SvgProvider>,
 		)
@@ -41,7 +47,7 @@ describe("setupReactSvg", () => {
 
 	it("Image with alt overwrite", () => {
 		const { getByAltText } = render(
-			<SvgProvider>
+			<SvgProvider config={config}>
 				<Svg type="external" svg="icon" alt="Something different" />
 			</SvgProvider>,
 		)
@@ -51,7 +57,7 @@ describe("setupReactSvg", () => {
 
 	it("SVG inline default alt", () => {
 		const { getByTitle, container } = render(
-			<SvgProvider>
+			<SvgProvider config={config}>
 				<Svg type="inline" svg="icon" />
 			</SvgProvider>,
 		)
@@ -63,7 +69,7 @@ describe("setupReactSvg", () => {
 
 	it("SVG inline alt overwrite", () => {
 		const { getByTitle, container } = render(
-			<SvgProvider>
+			<SvgProvider config={config}>
 				<Svg type="inline" svg="icon" alt="Something different" />
 			</SvgProvider>,
 		)
@@ -75,7 +81,7 @@ describe("setupReactSvg", () => {
 
 	it("SVG link default alt", () => {
 		const { getByTitle, container } = render(
-			<SvgProvider>
+			<SvgProvider config={config}>
 				<Svg type="link" svg="icon" />
 			</SvgProvider>,
 		)
@@ -88,7 +94,7 @@ describe("setupReactSvg", () => {
 
 	it("SVG link alt overwrite", () => {
 		const { getByTitle, container } = render(
-			<SvgProvider>
+			<SvgProvider config={config}>
 				<Svg type="link" svg="icon" alt="🪩" />
 			</SvgProvider>,
 		)
@@ -101,7 +107,7 @@ describe("setupReactSvg", () => {
 
 	it("Custom element", () => {
 		const { getByAltText, container } = render(
-			<SvgProvider>
+			<SvgProvider config={config}>
 				<Svg type="customElement" svg="icon" />
 			</SvgProvider>,
 		)
@@ -123,5 +129,125 @@ describe("setupReactSvg", () => {
 	it("getSvgUrl throws for an unknown svg key", () => {
 		// @ts-expect-error - intentionally an invalid key to test the runtime guard
 		expect(() => getSvgUrl("doesNotExist")).toThrow(/Unknown svg provided/)
+	})
+})
+
+describe("Svg / SvgProvider as plain components", () => {
+	const SVG_MAP = {
+		icon: { height: 16, width: 9, alt: "Icon" },
+	}
+
+	it("takes its config from the provider", () => {
+		const config = createSvgConfig({ svgMap: SVG_MAP, rootFolder: "/path/to" })
+
+		const { getByAltText } = render(
+			<SvgProvider config={config}>
+				<Svg type="external" svg="icon" />
+			</SvgProvider>,
+		)
+
+		expect(getByAltText("Icon").getAttribute("src")).toBe("/path/to/icon.svg")
+		cleanup()
+	})
+
+	it("defaults to the link type and uses the configured namespace", () => {
+		const config = createSvgConfig({
+			svgMap: SVG_MAP,
+			rootFolder: "/path/to",
+			namespace: "🧪",
+		})
+
+		const { getByTitle, container } = render(
+			<SvgProvider config={config}>
+				<Svg svg="icon" />
+			</SvgProvider>,
+		)
+
+		getByTitle("Icon")
+		expect(container.querySelector("use")?.getAttribute("href")).toBe(
+			"#🧪-icon",
+		)
+		cleanup()
+	})
+
+	it("takes a config prop without a provider", () => {
+		const config = createSvgConfig({ svgMap: SVG_MAP, rootFolder: "/path/to" })
+
+		const { getByTitle, container } = render(
+			<Svg type="inline" svg="icon" config={config} alt="Inline icon" />,
+		)
+
+		getByTitle("Inline icon")
+		expect(container.querySelectorAll("svg").length).toBe(1)
+		cleanup()
+	})
+
+	it("throws a helpful error without a config", () => {
+		expect(() => render(<Svg type="inline" svg="icon" />)).toThrow(
+			/No svg config found/,
+		)
+		cleanup()
+	})
+
+	it("only defines the svgs from its own map when two configs share a namespace", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(async (url: string) => ({
+				text: async () => `<path data-url="${url}" />`,
+			})),
+		)
+
+		const first = setupReactSvg({
+			rootFolder: "/first",
+			svgMap: { alpha: { width: 1, height: 1 } },
+		})
+		const second = setupReactSvg({
+			rootFolder: "/second",
+			svgMap: { beta: { width: 1, height: 1 } },
+		})
+
+		const { container } = render(
+			<>
+				<first.SvgProvider config={first.config}>
+					<first.Svg svg="alpha" type="link" />
+				</first.SvgProvider>
+				<second.SvgProvider config={second.config}>
+					<second.Svg svg="beta" type="link" />
+				</second.SvgProvider>
+			</>,
+		)
+
+		await waitFor(() => {
+			expect(container.querySelectorAll("defs > g").length).toBe(2)
+		})
+
+		const ids = [...container.querySelectorAll("defs > g")]
+			.map((group) => group.id)
+			.sort()
+
+		expect(ids).toEqual(["_RI-alpha", "_RI-beta"])
+
+		vi.unstubAllGlobals()
+		cleanup()
+	})
+
+	it("exports only the supported runtime surface", async () => {
+		const pkg = await import("../dist/index.mjs")
+
+		expect(Object.keys(pkg).sort()).toEqual([
+			"Svg",
+			"SvgProvider",
+			"createSvgConfig",
+			"default",
+			"formatSvgPath",
+			"resolveSvgUrl",
+			"setupReactSvg",
+		])
+	})
+
+	it("resolveSvgUrl works on a standalone config", () => {
+		const config = createSvgConfig({ svgMap: SVG_MAP, rootFolder: "/path/to" })
+
+		expect(resolveSvgUrl(config, "icon")).toBe("/path/to/icon.svg")
 	})
 })
