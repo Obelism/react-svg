@@ -19,7 +19,7 @@ const chunkSpecifiers = (entry: string) =>
 const PURE_HELPERS = ["createSvgConfig", "resolveSvgUrl", "formatSvgPath"]
 
 const COMPONENT_CHUNK =
-	/^(Svg|SvgProvider|SvgGroup|SvgImage|InlineSvg|LinkedSvg)-/
+	/^(Svg|SvgProvider|SvgGroup|SvgImage|SvgDefinitions|SvgConfigContext|InlineSvg|LinkedSvg)-/
 
 /**
  * Both formats are published, and a consumer on either one gets the same
@@ -88,12 +88,18 @@ describe("package boundaries", () => {
 			"LinkedSvg",
 			"SvgGroup",
 			"SvgImage",
+			"SvgDefinitions",
 			"getSvgId",
 			"formatSvgViewBox",
 			"SvgConfigContext",
 			"useSvgConfig",
 			"SvgElementArgs",
 			"SetupReactSvgArgs",
+			// The linked set is reachable only through the components that use it.
+			"LinkedSvgEntry",
+			"useLinkedSvg",
+			"useLinkedSvgs",
+			"useMarkLinkedSvgLoaded",
 		]) {
 			expect(
 				new RegExp(`\\b${internal}\\b`).test(types),

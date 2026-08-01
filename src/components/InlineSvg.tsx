@@ -18,7 +18,9 @@ export type InlineSvgProps<SvgMapT extends SvgMap = SvgMap> =
  */
 export const InlineSvg = memo(
 	({
-		svg,
+		// The linked set is not involved in an inline render, so the key is not
+		// needed — only the url to fetch.
+		svg: _svg,
 		entry,
 		url,
 		alt,
@@ -38,7 +40,7 @@ export const InlineSvg = memo(
 
 		return (
 			<BaseSvg {...rest} entry={entry} alt={alt}>
-				<SvgGroup svg={svg} url={url} />
+				<SvgGroup url={url} />
 			</BaseSvg>
 		)
 	},

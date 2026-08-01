@@ -3,12 +3,9 @@
 import type React from "react"
 import { memo } from "react"
 
-import { getSvgId } from "../_shared/getSvgId"
-import { resolveSvgUrl } from "../_shared/resolveSvgUrl"
 import { SvgConfigContext } from "../config/SvgConfigContext"
 import type { SvgConfig, SvgMap } from "../config/types"
-import { useLinkedSvgList } from "../functions/useSvgLoaded"
-import { SvgGroup } from "./SvgGroup"
+import { SvgDefinitions } from "./SvgDefinitions"
 
 export type SvgProviderProps<SvgMapT extends SvgMap = SvgMap> = {
 	config: SvgConfig<SvgMapT>
@@ -17,44 +14,22 @@ export type SvgProviderProps<SvgMapT extends SvgMap = SvgMap> = {
 
 /**
  * Makes the config available to every `<Svg />` below it, and renders the
- * `<defs>` block that the `type="link"` svgs point their `<use>` at.
+ * definitions block that the `type="link"` svgs point their `<use>` at.
  *
  * Build the config once with `createSvgConfig()`, or take it from
  * `setupReactSvg()`. Resolving raw options here instead would hand every svg
  * below a freshly identified config on each render.
+ *
+ * Which svgs get defined, what their ids are and where their markup comes from
+ * all belong to the linked set now; the provider only decides where the block
+ * sits in the tree.
  */
-const SvgProviderComponent = memo(({ config, children }: SvgProviderProps) => {
-	const [linkedSvgList] = useLinkedSvgList(config.namespace)
-
-	// The linked list is shared by namespace, so two providers configured with
-	// the same namespace see each other's keys. Only define the svgs this
-	// provider actually knows about, or it renders (and fetches) svgs from a
-	// different svg map under duplicate ids.
-	const referencedKeys = linkedSvgList
-		? Object.keys(linkedSvgList).filter((svg) => svg in config.svgMap)
-		: []
-
-	return (
-		<SvgConfigContext.Provider value={config}>
-			{referencedKeys.length > 0 && (
-				<svg style={{ display: "none" }} aria-hidden="true">
-					<defs>
-						{referencedKeys.map((svg) => (
-							<SvgGroup
-								key={svg}
-								id={getSvgId(config.namespace, svg)}
-								svg={svg}
-								url={resolveSvgUrl(config, svg)}
-							/>
-						))}
-					</defs>
-				</svg>
-			)}
-
-			{children}
-		</SvgConfigContext.Provider>
-	)
-})
+const SvgProviderComponent = memo(({ config, children }: SvgProviderProps) => (
+	<SvgConfigContext.Provider value={config}>
+		<SvgDefinitions />
+		{children}
+	</SvgConfigContext.Provider>
+))
 
 SvgProviderComponent.displayName = "SvgProvider"
 

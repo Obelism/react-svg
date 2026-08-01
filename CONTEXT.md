@@ -39,6 +39,13 @@ The hidden SVG element holding one definition per linked SVG, which linked SVGs
 elsewhere on the page point at. Exists once per config.
 _Avoid_: defs, sprite, symbol sheet
 
+**Linked set**:
+The SVGs a page has linked so far, each with whether its markup has arrived.
+One set per namespace, so two configs sharing a namespace share a set — which
+is why a config only ever defines the members it recognises. What the
+definitions block is rendered from.
+_Avoid_: registry, cache, list, store
+
 ### Render types
 
 **Render type**:

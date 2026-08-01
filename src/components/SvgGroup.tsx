@@ -1,37 +1,36 @@
 "use client"
 
-import { memo } from "react"
+import { memo, useEffect } from "react"
 import useSWR from "swr"
-import { useSvgConfig } from "../config/SvgConfigContext"
 import { SWRConfig } from "../config/SWRConfig"
-import type { SvgMap } from "../config/types"
 import { svgFetcher } from "../functions/svgFetcher"
-import { useSetLinkedSvgLoaded } from "../functions/useSvgLoaded"
 
-export type SvgGroupProps<SvgMapT extends SvgMap = SvgMap> = {
-	svg: keyof SvgMapT
+export type SvgGroupProps = {
 	url: string
+	onLoaded?: () => void
 	// biome-ignore lint/suspicious/noExplicitAny: pass-through bag spread onto <g>; unknown breaks JSX spreading (verified via tsc)
 	[x: string]: any
 }
 
 /**
- * Fetches the raw contents of a single svg file and drops them into a `<g>`.
- * Used both inline (inside a `<svg>`) and by the provider (inside `<defs>`).
+ * Fetches the raw contents of one svg file and drops them into a `<g>`. Used
+ * inline (inside a `<svg>`) and by the definitions block.
  *
- * The url is resolved by the caller rather than here, so `resolveSvgUrl` stays
- * the only place that knows how an svg key becomes a url. The svg config comes
- * from context: both callers render it inside a provider.
+ * Knows nothing but its url — not the svg config, not the linked set. The
+ * definitions block passes `onLoaded`; an inline render passes nothing, so an
+ * inline svg never reports a linked svg as loaded.
  */
-export const SvgGroup = memo(({ svg, url, ...rest }: SvgGroupProps) => {
-	const { namespace } = useSvgConfig()
-	const key = String(svg)
-	const setLinkedSvgLoaded = useSetLinkedSvgLoaded(namespace, key)
+export const SvgGroup = memo(({ url, onLoaded, ...rest }: SvgGroupProps) => {
+	const { data, error } = useSWR(url, svgFetcher, SWRConfig)
 
-	const { data, error } = useSWR(url, svgFetcher, {
-		...SWRConfig,
-		onSuccess: setLinkedSvgLoaded,
-	})
+	// Reports having the markup, not having fetched it. SWR serves a url it has
+	// already loaded straight from cache without calling the fetcher, so an
+	// `onSuccess` handler would miss exactly the case where the markup arrived
+	// via some other render of the same svg.
+	useEffect(() => {
+		if (!data || error || !onLoaded) return
+		onLoaded()
+	}, [data, error, onLoaded])
 
 	if (!data || error) return null
 
