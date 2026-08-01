@@ -2,7 +2,6 @@
 
 import { memo } from "react"
 import useSWR from "swr"
-import { formatSvgPath } from "../_shared/formatSvgPath"
 import { useSvgConfig } from "../config/SvgConfigContext"
 import { SWRConfig } from "../config/SWRConfig"
 import type { SvgConfig, SvgMap } from "../config/types"
@@ -11,6 +10,7 @@ import { useSetLinkedSvgLoaded } from "../functions/useSvgLoaded"
 
 export type SvgGroupProps<SvgMapT extends SvgMap = SvgMap> = {
 	svg: keyof SvgMapT
+	url: string
 	config?: SvgConfig<SvgMapT>
 	// biome-ignore lint/suspicious/noExplicitAny: pass-through bag spread onto <g>; unknown breaks JSX spreading (verified via tsc)
 	[x: string]: any
@@ -19,17 +19,19 @@ export type SvgGroupProps<SvgMapT extends SvgMap = SvgMap> = {
 /**
  * Fetches the raw contents of a single svg file and drops them into a `<g>`.
  * Used both inline (inside a `<svg>`) and by the provider (inside `<defs>`).
+ *
+ * The url is resolved by the caller rather than here, so `resolveSvgUrl` stays
+ * the only place that knows how an svg key becomes a url.
  */
-export const SvgGroup = memo(({ svg, config, ...rest }: SvgGroupProps) => {
-	const { svgMap, rootFolder, namespace } = useSvgConfig(config)
+export const SvgGroup = memo(({ svg, url, config, ...rest }: SvgGroupProps) => {
+	const { namespace } = useSvgConfig(config)
 	const key = String(svg)
 	const setLinkedSvgLoaded = useSetLinkedSvgLoaded(namespace, key)
 
-	const { data, error } = useSWR(
-		svgMap[key]?.path || formatSvgPath<SvgMap>(key, rootFolder),
-		svgFetcher,
-		{ ...SWRConfig, onSuccess: setLinkedSvgLoaded },
-	)
+	const { data, error } = useSWR(url, svgFetcher, {
+		...SWRConfig,
+		onSuccess: setLinkedSvgLoaded,
+	})
 
 	if (!data || error) return null
 

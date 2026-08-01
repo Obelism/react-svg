@@ -17,12 +17,8 @@ const {
 	svgMap: SVG_MAP,
 	rootFolder: "/icons",
 	svgRenderers: {
-		nextImage: ({ svg, folder, entry }) => (
-			<img
-				src={`${folder}/${String(svg)}.svg`}
-				width={entry.width}
-				alt={String(svg)}
-			/>
+		nextImage: ({ svg, url, entry }) => (
+			<img src={url} width={entry.width} alt={String(svg)} />
 		),
 	},
 })

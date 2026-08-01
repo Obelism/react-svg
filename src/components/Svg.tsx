@@ -3,6 +3,7 @@
 import type React from "react"
 import { memo } from "react"
 
+import { resolveSvgUrl } from "../_shared/resolveSvgUrl"
 import { useSvgConfig } from "../config/SvgConfigContext"
 import type {
 	SvgConfig,
@@ -66,7 +67,7 @@ const SvgComponent = memo(
 		...rest
 	}: SvgComponentProps) => {
 		const resolvedConfig = useSvgConfig(config)
-		const { svgMap, rootFolder, svgRenderers } = resolvedConfig
+		const { svgMap, svgRenderers } = resolvedConfig
 		const key = String(svg)
 		const entry = svgMap[key]
 
@@ -79,11 +80,16 @@ const SvgComponent = memo(
 			return null
 		}
 
+		// Resolved once, here, for every render type. Nothing below this line
+		// knows how a key becomes a url.
+		const url = resolveSvgUrl(resolvedConfig, key)
+
 		if (type === "inline") {
 			return (
 				<InlineSvg
 					{...rest}
 					svg={key}
+					url={url}
 					alt={alt}
 					onLoad={onLoad}
 					config={resolvedConfig}
@@ -103,15 +109,13 @@ const SvgComponent = memo(
 			)
 		}
 
-		const folder = rootFolder || ""
-
 		if (type === "external") {
 			return (
 				<SvgImage
 					{...rest}
 					svg={key}
 					entry={entry}
-					folder={folder}
+					url={url}
 					loading={loading}
 					alt={alt}
 					onLoad={onLoad}
@@ -127,7 +131,7 @@ const SvgComponent = memo(
 					{...rest}
 					svg={key}
 					entry={entry}
-					folder={folder}
+					url={url}
 					loading={loading}
 					alt={alt}
 					onLoad={onLoad}

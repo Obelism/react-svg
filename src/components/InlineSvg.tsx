@@ -9,6 +9,7 @@ import { SvgGroup } from "./SvgGroup"
 
 export type InlineSvgProps<SvgMapT extends SvgMap = SvgMap> = {
 	svg: keyof SvgMapT
+	url: string
 	alt?: string
 	onLoad?: () => void
 	config?: SvgConfig<SvgMapT>
@@ -21,7 +22,7 @@ export type InlineSvgProps<SvgMapT extends SvgMap = SvgMap> = {
  * component, so every node inside it can be targeted individually.
  */
 export const InlineSvg = memo(
-	({ svg, alt, onLoad, config, ...rest }: InlineSvgProps) => {
+	({ svg, url, alt, onLoad, config, ...rest }: InlineSvgProps) => {
 		const resolvedConfig = useSvgConfig(config)
 		const hasLoaded = useRef<boolean>(false)
 
@@ -37,7 +38,7 @@ export const InlineSvg = memo(
 
 		return (
 			<BaseSvg {...rest} entry={entry} alt={alt}>
-				<SvgGroup svg={svg} config={resolvedConfig} />
+				<SvgGroup svg={svg} url={url} config={resolvedConfig} />
 			</BaseSvg>
 		)
 	},

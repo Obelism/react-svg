@@ -10,9 +10,9 @@ const { SvgProvider, Svg, config } = setupReactSvg({
 		globe: { width: 16, height: 16, alt: "Globe" },
 	},
 	svgRenderers: {
-		framed: ({ svg, folder, alt }) => (
+		framed: ({ url, alt }) => (
 			<span data-testid="custom-renderer" style={{ border: "1px solid" }}>
-				<img src={`${folder}/${String(svg)}.svg`} alt={alt} width={32} />
+				<img src={url} alt={alt} width={32} />
 			</span>
 		),
 	},

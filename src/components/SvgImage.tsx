@@ -1,7 +1,6 @@
 "use client"
 
 import { memo, useEffect, useRef } from "react"
-import { formatSvgPath } from "../_shared/formatSvgPath"
 import type { SvgElementArgs, SvgMap } from "../config/types"
 
 export type SvgImageProps<SvgMapT extends SvgMap = SvgMap> =
@@ -13,8 +12,9 @@ export type SvgImageProps<SvgMapT extends SvgMap = SvgMap> =
  */
 export const SvgImage = memo(
 	({
-		svg,
-		folder,
+		// Destructured to keep it out of `rest`; `<img>` has no `svg` attribute.
+		svg: _svg,
+		url,
 		entry,
 		loading = "lazy",
 		alt,
@@ -42,7 +42,7 @@ export const SvgImage = memo(
 					...style,
 				}}
 				alt={alt || entry?.alt || ""}
-				src={entry.path || formatSvgPath<SvgMap>(String(svg), folder)}
+				src={url}
 				loading={loading}
 			/>
 		)

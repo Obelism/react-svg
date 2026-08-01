@@ -149,9 +149,9 @@ An optional argument for your own custom render functions. This is convenient to
 ```tsx
 ...
 svgRenderers: {
-    'custom-image': ({ svg, folder, alt }) => (
+    'custom-image': ({ url, alt }) => (
         <div id="customElement">
-            <img src={formatSvgPath(svg, folder)} alt={alt} />
+            <img src={url} alt={alt} />
         </div>
     )
 }
@@ -412,6 +412,7 @@ Renderers are functions, and functions cannot cross the server/client boundary a
 | `ResolvedSvgConfig` | `SvgConfig` |
 | `SetupReactSvgArgs` | `SvgOptions` |
 | `svgData` prop on renderers | `entry` |
+| `folder` prop on renderers | `url`, already resolved |
 
 `SvgProviderProps` also lost its second type parameter — renderers come from the config now, not from props — so `SvgProviderProps<Map, RenderMap>` becomes `SvgProviderProps<Map>`.
 

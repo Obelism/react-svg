@@ -18,7 +18,13 @@ export type SvgEntry = {
 export type SvgMap = Record<string, SvgEntry>
 
 export type SvgRendererProps<SvgMapT extends SvgMap> = {
-	folder?: string
+	/**
+	 * The url this svg is served from, already resolved: the entry's `path` when
+	 * set, the `rootFolder` plus the generated filename otherwise. Renderers get
+	 * the finished url rather than the folder, so the join rule stays inside the
+	 * library. See docs/adr/0004.
+	 */
+	url: string
 	loading?: "lazy" | "eager"
 	alt?: string
 	svg: keyof SvgMapT
@@ -37,7 +43,7 @@ export type SvgRenderMap<SvgMapT extends SvgMap> =
 	| Record<string, SvgRenderer<SvgMapT>>
 
 export type SvgElementArgs<SvgMapT extends SvgMap> = {
-	folder: string
+	url: string
 	svg: keyof SvgMapT
 	entry: SvgEntry
 	alt?: string

@@ -4,6 +4,7 @@ import type React from "react"
 import { memo } from "react"
 
 import { getSvgId } from "../_shared/getSvgId"
+import { resolveSvgUrl } from "../_shared/resolveSvgUrl"
 import { SvgConfigContext } from "../config/SvgConfigContext"
 import type { SvgConfig, SvgMap } from "../config/types"
 import { useLinkedSvgList } from "../functions/useSvgLoaded"
@@ -43,6 +44,7 @@ const SvgProviderComponent = memo(({ config, children }: SvgProviderProps) => {
 								key={svg}
 								id={getSvgId(config.namespace, svg)}
 								svg={svg}
+								url={resolveSvgUrl(config, svg)}
 								config={config}
 							/>
 						))}

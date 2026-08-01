@@ -21,9 +21,9 @@ const {
 		// A render type composed from a built-in one: the svg as a file, wrapped
 		// in a link to that file. Renderers get everything they need as props, so
 		// they never have to reach for the config themselves.
-		externalLink: ({ svg, folder, alt, ...rest }) => (
+		externalLink: ({ svg, url, alt, ...rest }) => (
 			<a
-				href={`${folder}${String(svg)}.svg`}
+				href={url}
 				target="_blank"
 				rel="noreferrer"
 				title={`Open ${String(svg)}.svg`}

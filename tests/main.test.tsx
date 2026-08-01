@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from "vitest"
 
 import setupReactSvg, {
 	createSvgConfig,
-	formatSvgPath,
 	resolveSvgUrl,
 	Svg,
 	SvgProvider,
@@ -27,9 +26,9 @@ describe("setupReactSvg", () => {
 			},
 		},
 		svgRenderers: {
-			customElement: ({ svg, folder }) => (
+			customElement: ({ url }) => (
 				<div id="customElement">
-					<img src={formatSvgPath(svg, folder)} alt="Custom alt tag" />
+					<img src={url} alt="Custom alt tag" />
 				</div>
 			),
 		},
@@ -115,6 +114,49 @@ describe("setupReactSvg", () => {
 		getByAltText("Custom alt tag")
 		const use = container.querySelector("#customElement")
 		expect(!!use).toBe(true)
+		cleanup()
+	})
+
+	it("hands renderers the resolved url", () => {
+		const { getByAltText } = render(
+			<SvgProvider config={config}>
+				<Svg type="customElement" svg="icon" />
+			</SvgProvider>,
+		)
+
+		expect(getByAltText("Custom alt tag").getAttribute("src")).toBe(
+			"/path/to/icon.svg",
+		)
+		cleanup()
+	})
+
+	// Under the v2 protocol a renderer was handed `folder` and joined the
+	// filename itself, so an entry's `path` override was silently ignored by
+	// every custom render type. Resolving the url before it crosses the seam is
+	// what fixes that.
+	it("hands renderers the per-entry path override", () => {
+		const { getByAltText } = render(
+			<SvgProvider config={config}>
+				<Svg type="customElement" svg="iconWithPath" />
+			</SvgProvider>,
+		)
+
+		expect(getByAltText("Custom alt tag").getAttribute("src")).toBe(
+			"/custom/place/icon.svg",
+		)
+		cleanup()
+	})
+
+	it("external respects the per-entry path override", () => {
+		const { getByAltText } = render(
+			<SvgProvider config={config}>
+				<Svg type="external" svg="iconWithPath" />
+			</SvgProvider>,
+		)
+
+		expect(getByAltText("Icon with path").getAttribute("src")).toBe(
+			"/custom/place/icon.svg",
+		)
 		cleanup()
 	})
 
