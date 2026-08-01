@@ -160,6 +160,28 @@ describe("setupReactSvg", () => {
 		cleanup()
 	})
 
+	// Every render type is handed the same props now, including `loading`.
+	// `<svg>` has no such attribute, so the adapters that ignore it must drop
+	// it rather than let it through with the pass-through bag.
+	it.each([
+		"inline",
+		"link",
+	])("does not leak loading onto the %s svg element", (type) => {
+		const { container } = render(
+			<SvgProvider config={config}>
+				<Svg type={type} svg="icon" loading="lazy" data-target="" />
+			</SvgProvider>,
+		)
+
+		// Not `querySelector("svg")`: the provider's <defs> block is an <svg>
+		// too, and it comes first in the DOM.
+		const target = container.querySelector("svg[data-target]")
+
+		expect(target).not.toBeNull()
+		expect(target?.hasAttribute("loading")).toBe(false)
+		cleanup()
+	})
+
 	it("getSvgUrl falls back to rootFolder", () => {
 		expect(getSvgUrl("icon")).toBe("/path/to/icon.svg")
 	})

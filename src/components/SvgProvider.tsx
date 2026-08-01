@@ -45,7 +45,6 @@ const SvgProviderComponent = memo(({ config, children }: SvgProviderProps) => {
 								id={getSvgId(config.namespace, svg)}
 								svg={svg}
 								url={resolveSvgUrl(config, svg)}
-								config={config}
 							/>
 						))}
 					</defs>

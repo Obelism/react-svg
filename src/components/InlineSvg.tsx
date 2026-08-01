@@ -2,28 +2,32 @@
 
 import { memo, useEffect, useRef } from "react"
 
-import { useSvgConfig } from "../config/SvgConfigContext"
-import type { SvgConfig, SvgMap } from "../config/types"
+import type { SvgMap, SvgRendererProps } from "../config/types"
 import { BaseSvg } from "./BaseSvg"
 import { SvgGroup } from "./SvgGroup"
 
-export type InlineSvgProps<SvgMapT extends SvgMap = SvgMap> = {
-	svg: keyof SvgMapT
-	url: string
-	alt?: string
-	onLoad?: () => void
-	config?: SvgConfig<SvgMapT>
-	// biome-ignore lint/suspicious/noExplicitAny: pass-through bag spread onto the <svg> element; unknown breaks JSX spreading (verified via tsc)
-	[x: string]: any
-}
+export type InlineSvgProps<SvgMapT extends SvgMap = SvgMap> =
+	SvgRendererProps<SvgMapT>
 
 /**
  * The `type="inline"` render: the svg contents are fetched and inlined in this
  * component, so every node inside it can be targeted individually.
+ *
+ * An adapter at the renderer seam — it receives exactly the renderer props, the
+ * same ones a consumer renderer gets. See docs/adr/0004.
  */
 export const InlineSvg = memo(
-	({ svg, url, alt, onLoad, config, ...rest }: InlineSvgProps) => {
-		const resolvedConfig = useSvgConfig(config)
+	({
+		svg,
+		entry,
+		url,
+		alt,
+		onLoad,
+		// Inline renders have nothing to lazy-load, and `<svg>` has no `loading`
+		// attribute — so it is dropped rather than passed through with `rest`.
+		loading: _loading,
+		...rest
+	}: InlineSvgProps) => {
 		const hasLoaded = useRef<boolean>(false)
 
 		useEffect(() => {
@@ -32,13 +36,9 @@ export const InlineSvg = memo(
 			onLoad()
 		}, [onLoad])
 
-		const entry = resolvedConfig.svgMap[String(svg)]
-
-		if (!entry) return null
-
 		return (
 			<BaseSvg {...rest} entry={entry} alt={alt}>
-				<SvgGroup svg={svg} url={url} config={resolvedConfig} />
+				<SvgGroup svg={svg} url={url} />
 			</BaseSvg>
 		)
 	},

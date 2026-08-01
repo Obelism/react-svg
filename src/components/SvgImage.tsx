@@ -1,14 +1,17 @@
 "use client"
 
 import { memo, useEffect, useRef } from "react"
-import type { SvgElementArgs, SvgMap } from "../config/types"
+import type { SvgMap, SvgRendererProps } from "../config/types"
 
 export type SvgImageProps<SvgMapT extends SvgMap = SvgMap> =
-	SvgElementArgs<SvgMapT>
+	SvgRendererProps<SvgMapT>
 
 /**
  * The `type="external"` render: a plain lazy loaded `<img>` that reserves the
  * right aspect ratio from the svg map so it never causes a layout shift.
+ *
+ * An adapter at the renderer seam — the same props a consumer renderer gets.
+ * See docs/adr/0004.
  */
 export const SvgImage = memo(
 	({

@@ -34,24 +34,21 @@ export type SvgRendererProps<SvgMapT extends SvgMap> = {
 	[key: string]: any
 }
 
+/**
+ * A render type. The built-in three and any consumer renderer are the same
+ * thing — this type — so the set can be extended without the additions being
+ * second-class. See docs/adr/0004.
+ *
+ * Returns `ReactNode` rather than an element so that a `memo()`'d component
+ * satisfies it; the built-ins are memoized.
+ */
 export type SvgRenderer<SvgMapT extends SvgMap> = (
 	props: SvgRendererProps<SvgMapT>,
-) => React.JSX.Element | null
+) => React.ReactNode
 
 export type SvgRenderMap<SvgMapT extends SvgMap> =
 	| undefined
 	| Record<string, SvgRenderer<SvgMapT>>
-
-export type SvgElementArgs<SvgMapT extends SvgMap> = {
-	url: string
-	svg: keyof SvgMapT
-	entry: SvgEntry
-	alt?: string
-	loading?: "lazy" | "eager"
-	onLoad?: () => void
-	// biome-ignore lint/suspicious/noExplicitAny: pass-through bag spread onto arbitrary host/custom elements; unknown breaks JSX spreading (verified via tsc)
-	[key: string]: any
-}
 
 /**
  * The options accepted by `setupReactSvg()`, and by `<SvgProvider />` when it is

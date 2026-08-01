@@ -4,14 +4,13 @@ import { memo } from "react"
 import useSWR from "swr"
 import { useSvgConfig } from "../config/SvgConfigContext"
 import { SWRConfig } from "../config/SWRConfig"
-import type { SvgConfig, SvgMap } from "../config/types"
+import type { SvgMap } from "../config/types"
 import { svgFetcher } from "../functions/svgFetcher"
 import { useSetLinkedSvgLoaded } from "../functions/useSvgLoaded"
 
 export type SvgGroupProps<SvgMapT extends SvgMap = SvgMap> = {
 	svg: keyof SvgMapT
 	url: string
-	config?: SvgConfig<SvgMapT>
 	// biome-ignore lint/suspicious/noExplicitAny: pass-through bag spread onto <g>; unknown breaks JSX spreading (verified via tsc)
 	[x: string]: any
 }
@@ -21,10 +20,11 @@ export type SvgGroupProps<SvgMapT extends SvgMap = SvgMap> = {
  * Used both inline (inside a `<svg>`) and by the provider (inside `<defs>`).
  *
  * The url is resolved by the caller rather than here, so `resolveSvgUrl` stays
- * the only place that knows how an svg key becomes a url.
+ * the only place that knows how an svg key becomes a url. The svg config comes
+ * from context: both callers render it inside a provider.
  */
-export const SvgGroup = memo(({ svg, url, config, ...rest }: SvgGroupProps) => {
-	const { namespace } = useSvgConfig(config)
+export const SvgGroup = memo(({ svg, url, ...rest }: SvgGroupProps) => {
+	const { namespace } = useSvgConfig()
 	const key = String(svg)
 	const setLinkedSvgLoaded = useSetLinkedSvgLoaded(namespace, key)
 
