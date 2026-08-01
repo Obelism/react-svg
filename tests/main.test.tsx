@@ -1,5 +1,5 @@
-import { cleanup, render, waitFor } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import { cleanup, fireEvent, render, waitFor } from "@testing-library/react"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import setupReactSvg, {
 	createSvgConfig,
@@ -313,5 +313,138 @@ describe("Svg / SvgProvider as plain components", () => {
 		const config = createSvgConfig({ svgMap: SVG_MAP, rootFolder: "/path/to" })
 
 		expect(resolveSvgUrl(config, "icon")).toBe("/path/to/icon.svg")
+	})
+})
+
+describe("onLoad", () => {
+	// Each case gets its own namespace *and* rootFolder. The linked set is shared
+	// by namespace and the fetched markup is cached by url, so two cases sharing
+	// either one are not independent.
+	const makeConfig = (id: string) =>
+		setupReactSvg({
+			namespace: `ns-${id}`,
+			rootFolder: `/${id}`,
+			svgMap: { icon: { width: 1, height: 1, alt: "Icon" } },
+		})
+
+	beforeEach(() => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(async () => ({ text: async () => "<path/>" })),
+		)
+	})
+
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		cleanup()
+	})
+
+	it("fires for an inline render", async () => {
+		const { Svg, SvgProvider, config } = makeConfig("inline")
+		const onLoad = vi.fn()
+
+		render(
+			<SvgProvider config={config}>
+				<Svg type="inline" svg="icon" onLoad={onLoad} />
+			</SvgProvider>,
+		)
+
+		await waitFor(() => {
+			expect(onLoad).toHaveBeenCalledTimes(1)
+		})
+	})
+
+	it("fires once for an inline render, not on every render", async () => {
+		const { Svg, SvgProvider, config } = makeConfig("inline-once")
+		const onLoad = vi.fn()
+
+		const tree = (
+			<SvgProvider config={config}>
+				<Svg type="inline" svg="icon" onLoad={onLoad} />
+			</SvgProvider>
+		)
+
+		const { rerender } = render(tree)
+		await waitFor(() => {
+			expect(onLoad).toHaveBeenCalledTimes(1)
+		})
+
+		rerender(tree)
+		rerender(tree)
+
+		expect(onLoad).toHaveBeenCalledTimes(1)
+	})
+
+	it("fires for a link render once the definitions block is populated", async () => {
+		const { Svg, SvgProvider, config } = makeConfig("link")
+		const onLoad = vi.fn()
+
+		const { container } = render(
+			<SvgProvider config={config}>
+				<Svg type="link" svg="icon" onLoad={onLoad} />
+			</SvgProvider>,
+		)
+
+		// The markup has not arrived on the first paint, so neither has onLoad.
+		expect(onLoad).not.toHaveBeenCalled()
+
+		await waitFor(() => {
+			expect(container.querySelector("defs > g")).not.toBeNull()
+		})
+
+		await waitFor(() => {
+			expect(onLoad).toHaveBeenCalledTimes(1)
+		})
+	})
+
+	it("fires for an external render when the image loads", () => {
+		const { Svg, SvgProvider, config } = makeConfig("external")
+		const onLoad = vi.fn()
+
+		const { getByAltText } = render(
+			<SvgProvider config={config}>
+				<Svg type="external" svg="icon" onLoad={onLoad} />
+			</SvgProvider>,
+		)
+
+		// jsdom never loads an <img> on its own, so this has to be driven.
+		expect(onLoad).not.toHaveBeenCalled()
+
+		fireEvent.load(getByAltText("Icon"))
+
+		expect(onLoad).toHaveBeenCalledTimes(1)
+	})
+
+	// Pinning current behaviour, not endorsing it: an inline render both writes
+	// the linked set and fills the url-keyed cache, so a later link render of the
+	// same key reports loaded without fetching anything itself. The linked set
+	// work has to preserve this or change it knowingly.
+	it("a prior inline render makes a later link render fire onLoad with no fetch of its own", async () => {
+		const { Svg, SvgProvider, config } = makeConfig("cross")
+
+		const first = render(
+			<SvgProvider config={config}>
+				<Svg type="inline" svg="icon" />
+			</SvgProvider>,
+		)
+		await waitFor(() => {
+			expect(first.container.querySelector("svg > g")).not.toBeNull()
+		})
+		cleanup()
+
+		const deadFetch = vi.fn(() => new Promise(() => {}))
+		vi.stubGlobal("fetch", deadFetch)
+
+		const onLoad = vi.fn()
+		render(
+			<SvgProvider config={config}>
+				<Svg type="link" svg="icon" onLoad={onLoad} />
+			</SvgProvider>,
+		)
+
+		await waitFor(() => {
+			expect(onLoad).toHaveBeenCalledTimes(1)
+		})
+		expect(deadFetch).not.toHaveBeenCalled()
 	})
 })
