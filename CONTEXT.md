@@ -30,8 +30,12 @@ _Avoid_: resolved config, setup
 
 **Namespace**:
 The prefix that scopes one config's DOM ids and shared cache keys, so two
-configs living in the same application cannot collide. Named the same in the
-options a consumer writes and in the resolved config.
+configs living in the same application need not collide. It is what keeps them
+apart, not a guarantee they are kept apart: it is optional and defaults to one
+value, so two configs that both omit it share a namespace, and any svg name
+they have in common resolves to whichever definition rendered first. Naming
+each config is the consumer's job. Named the same in the options a consumer
+writes and in the resolved config.
 _Avoid_: id prefix, scope
 
 **Definitions block**:

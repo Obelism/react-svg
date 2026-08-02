@@ -142,6 +142,23 @@ namespace: "🦦",
 
 To make references to the loaded SVGs we make use of ids. By default these are prefixed by; `_RI`. So for the the `arrowBack` the id would be; `_RI-arrowBack`. However if this gives problems in your application or you want to add some flair you can modify this to any string; `🦦-arrowBack`.
 
+⚠️ **Give every configuration its own namespace as soon as you have more than one.** The namespace is what keeps two configurations apart — it scopes both the `<defs>` ids and the shared cache the linked SVGs are tracked in. `namespace` is optional and defaults to `_RI`, so two configurations that both leave it unset share that default.
+
+That is fine until they also share an svg *name*. Both then emit a definition under the same `${namespace}-${key}` id, and a duplicate id in one document means every `<use>` pointing at it resolves to whichever definition rendered first. The symptom is an SVG rendering as the wrong file, with nothing logged and nothing failing:
+
+```ts
+// Two configs, both on the default namespace, both with a `logo`.
+const brand = createSvgConfig({ svgMap: { logo: { width: 100, height: 40 } }, rootFolder: '/brand' })
+const docs  = createSvgConfig({ svgMap: { logo: { width: 64,  height: 64 } }, rootFolder: '/docs'  })
+// Both define #_RI-logo. Whichever renders first wins, for both of them.
+
+// Fixed by naming them:
+const brand = createSvgConfig({ /* … */ namespace: '_brand' })
+const docs  = createSvgConfig({ /* … */ namespace: '_docs'  })
+```
+
+This is a deliberate trade-off rather than an oversight. Making `namespace` required would cost every single-configuration application a mandatory option to solve a problem only multi-configuration applications have — and it would not help two of them that picked the same string anyway. One configuration is the common case and needs no namespace at all; the [examples](examples) each run on one and set none.
+
 #### svgRenderers
 
 An optional argument for your own custom render functions. This is convenient to be used in meta frameworks like NextJS if you want to utilize their Image components.
@@ -409,7 +426,7 @@ So one config module can serve the whole application: `getSvgUrl` still runs dur
 
 Do **not** re-export `getSvgUrl` from a `"use client"` module and call it in a server component. Every export of such a module becomes a client reference, and calling one during a server render throws (`It is not possible to invoke a client function from the server`). Keep the URL helpers in a server-safe module, as above. This was the main thing v2 made impossible.
 
-Two providers that share a `namespace` also share their `<defs>` ids, so give each configuration its own `namespace` when you use more than one in a page.
+Two providers that share a `namespace` also share their `<defs>` ids, so give each configuration its own [`namespace`](#namespace) when you use more than one in a page.
 
 This is exercised end to end in [`examples/next`](examples/next) and [`examples/waku`](examples/waku) — each of which runs on a single config module.
 
