@@ -30,4 +30,55 @@ jobs:
               env:
                   CI: true
 
-            - run: npm publish --access=public
+            # The dist-tag comes from the version being published, because that
+            # is what consumers actually resolve. A bare `npm publish` tags
+            # everything `latest`, so a prerelease would become the default
+            # install for everyone already on the stable line.
+            #
+            #   3.0.0          -> latest
+            #   3.0.0-alpha.0  -> alpha
+            #   3.0.0-rc.1     -> rc
+            - name: Work out the dist-tag
+              id: dist-tag
+              run: |
+                  version="$(node -p 'require("./package.json").version')"
+                  prerelease="${version#*-}"
+
+                  if [ "$prerelease" = "$version" ]; then
+                      tag=latest
+                  else
+                      # The identifier only, without its counter: `alpha.0` -> `alpha`.
+                      tag="${prerelease%%.*}"
+
+                      # Semver permits a bare numeric prerelease (`3.0.0-1`),
+                      # which would leave no usable identifier.
+                      case "$tag" in
+                          ''|*[!a-zA-Z0-9-]*|[0-9]*) tag=next ;;
+                      esac
+                  fi
+
+                  echo "Publishing $version with dist-tag $tag"
+                  echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+            # A release marked as a prerelease on GitHub but carrying a stable
+            # version (or the reverse) means one of the two is wrong. Fail here
+            # rather than mis-tag the registry, which cannot be undone.
+            - name: Check the release matches the version
+              env:
+                  IS_PRERELEASE: ${{ github.event.release.prerelease }}
+                  DIST_TAG: ${{ steps.dist-tag.outputs.tag }}
+              run: |
+                  if [ "$IS_PRERELEASE" = "true" ] && [ "$DIST_TAG" = "latest" ]; then
+                      echo "::error::Release is marked as a prerelease, but package.json has a stable version. It would publish to 'latest'."
+                      exit 1
+                  fi
+
+                  if [ "$IS_PRERELEASE" = "false" ] && [ "$DIST_TAG" != "latest" ]; then
+                      echo "::error::Release is not marked as a prerelease, but package.json has a $DIST_TAG version."
+                      exit 1
+                  fi
+
+            - name: Publish
+              env:
+                  DIST_TAG: ${{ steps.dist-tag.outputs.tag }}
+              run: npm publish --access=public --tag "$DIST_TAG"
