@@ -326,7 +326,7 @@ export default function Page() {
 }
 ```
 
-The configuration crosses the server/client boundary as a prop, so it has to be serializable. `svgMap`, `rootFolder` and `namespace` are plain data and pass through fine. `svgRenderers` are **functions**, which can't be serialized — a config that carries custom renderers has to be built inside a `"use client"` module.
+The configuration crosses the server/client boundary as a prop, so it has to be serializable. `svgMap`, `rootFolder` and `namespace` are plain data and pass through fine. A custom renderer is a **component**, so it has to be client code — but declaring one in a `"use client"` module of its own is enough; see [custom renderers under RSC](#custom-renderers-under-rsc).
 
 `createSvgConfig`, `resolveSvgUrl` and `formatSvgPath` are pure and ship outside the client boundary, so they run on either side:
 
@@ -354,13 +354,47 @@ export const { SvgProvider, Svg, config, getSvgUrl } = setupReactSvg({
 // <link rel="preload" as="fetch" href={getSvgUrl("arrowBack")} />
 ```
 
-The one thing that does force a `"use client"` module is **custom renderers**, since they are functions and functions cannot be serialized across the boundary. Put the config that carries them in a client module — and note that `config` then becomes a client reference itself, so a server component can't read it. Wrap the provider in that module instead of exporting the config out of it.
+#### Custom renderers under RSC
+
+A custom renderer does need to be client code — but only the renderer does, not the config that names it. Declare it in its own `"use client"` module and import it into the server-safe config: what the config holds is then a client reference, which crosses the boundary the way any other client component does.
+
+```tsx
+// app/FramedSvg.tsx
+"use client"
+
+import type { SvgRendererProps } from "@obelism/react-svg"
+
+import type { SVG_MAP } from "./svg-config"
+
+export const FramedSvg = ({ url, alt }: SvgRendererProps<typeof SVG_MAP>) => (
+	<span className="frame">
+		<img src={url} alt={alt} />
+	</span>
+)
+```
+
+```ts
+// app/svg-config.ts — still no "use client"
+import setupReactSvg from "@obelism/react-svg"
+
+import { FramedSvg } from "./FramedSvg"
+
+export const SVG_MAP = { arrowBack: { width: 800, height: 800 } }
+
+export const { SvgProvider, Svg, config, getSvgUrl } = setupReactSvg({
+	svgMap: SVG_MAP,
+	rootFolder: "/icons",
+	svgRenderers: { framed: FramedSvg },
+})
+```
+
+So one config module can serve the whole application: `getSvgUrl` still runs during a server render, the svg map stays out of the client bundle, and `<Svg svg="arrowBack" type="framed" />` type checks and renders from a server component. Defining the renderer inline in the config — rather than importing it — is what would force the whole module to be client code.
 
 Do **not** re-export `getSvgUrl` from a `"use client"` module and call it in a server component. Every export of such a module becomes a client reference, and calling one during a server render throws (`It is not possible to invoke a client function from the server`). Keep the URL helpers in a server-safe module, as above. This was the main thing v2 made impossible.
 
 Two providers that share a `namespace` also share their `<defs>` ids, so give each configuration its own `namespace` when you use more than one in a page.
 
-Both patterns are exercised end to end in [`examples/next`](examples/next) and [`examples/waku`](examples/waku).
+This is exercised end to end in [`examples/next`](examples/next) and [`examples/waku`](examples/waku) — each of which runs on a single config module.
 
 ## Migrating to v3
 
@@ -384,11 +418,11 @@ The provider no longer accepts `svgMap` / `rootFolder` / `namespace` / `svgRende
 
 ### 2. Drop `"use client"` from your config module
 
-If you added it only so `setupReactSvg` could be called, remove it — the module is now plain data and a server component can import from it. Keep it only if the module declares custom renderers.
+If you added it only so `setupReactSvg` could be called, remove it — the module is now plain data and a server component can import from it. That holds even if it declares custom renderers, as long as you move them out; see the next step.
 
 ### 3. Move custom renderers into a client module
 
-Renderers are functions, and functions cannot cross the server/client boundary as serialized data. A config carrying them has to be built inside a `"use client"` module. React will tell you if you get this wrong, but the error names serialization rather than renderers, so it is worth knowing up front.
+A renderer is a component, so it has to be client code — but it can live in a `"use client"` module of its own, which the config then imports. That keeps the config module server-safe. Defining renderers inline in the config makes the whole module client code instead. React will tell you if you get this wrong, but the error names serialization rather than renderers, so it is worth knowing up front — see [custom renderers under RSC](#custom-renderers-under-rsc).
 
 ### 4. `idPrefix` is now `namespace`
 

@@ -1,8 +1,7 @@
-import { formatSvgPath, Svg, SvgProvider } from "@obelism/react-svg"
+import { formatSvgPath } from "@obelism/react-svg"
 
-import { CustomRendererDemo } from "../components/CustomRenderer"
 import { PlainSvgDemo } from "../components/PlainSvgDemo"
-import { getSvgUrl, svgConfig } from "../svg-config"
+import { getSvgUrl, Svg } from "../svg-config"
 
 export default async function HomePage() {
 	// Pure helpers, called during the server render
@@ -15,15 +14,16 @@ export default async function HomePage() {
 
 			<p data-testid="server-helpers">{serverResolved}</p>
 
-			<h2>Plain components, configured in a server component</h2>
-			<SvgProvider config={svgConfig}>
-				<Svg svg="vercel" type="link" data-testid="rsc-link" width={64} />
-				<Svg svg="next" type="inline" data-testid="rsc-inline" width={64} />
-				<Svg svg="next" type="external" data-testid="rsc-external" width={64} />
-			</SvgProvider>
+			{/* A server component: no "use client" wrapper of our own, and no
+			    provider of its own — the layout provides the config. */}
+			<h2>Every render type, from a server component</h2>
+			<Svg svg="vercel" type="link" data-testid="rsc-link" width={64} />
+			<Svg svg="next" type="inline" data-testid="rsc-inline" width={64} />
+			<Svg svg="next" type="external" data-testid="rsc-external" width={64} />
+			{/* The custom render type, from the same config */}
+			<Svg svg="globe" type="framed" alt="Globe in a frame" />
 
 			<PlainSvgDemo />
-			<CustomRendererDemo />
 		</main>
 	)
 }

@@ -1,14 +1,15 @@
 # Waku example
 
-Exercises `@obelism/react-svg` across every React server component boundary:
+Exercises `@obelism/react-svg` across every React server component boundary,
+from a **single config module**:
 
 | Where | What it covers |
 | --- | --- |
-| `src/svg-config.ts` | Pure helpers (`createSvgConfig`, `resolveSvgUrl`) in a server-safe module |
-| `src/pages/_layout.tsx` | `getSvgUrl` called during a **server** render, for a preload link |
-| `src/pages/index.tsx` | `Svg` / `SvgProvider` imported straight from the package into a **server component** |
-| `src/components/PlainSvgDemo.tsx` | The same components inside a client component, configured with provider props |
-| `src/components/CustomRenderer.tsx` | `setupReactSvg` with custom renderers — functions, so it has to live in a `"use client"` module |
+| `src/svg-config.ts` | The whole configuration, in a server-safe module — `setupReactSvg` with a custom renderer, and no `"use client"` |
+| `src/pages/_layout.tsx` | `getSvgUrl` called during a **server** render for a preload link, and the one `<SvgProvider />` the app has |
+| `src/pages/index.tsx` | Every render type — including the custom one — rendered from a **server component** |
+| `src/components/PlainSvgDemo.tsx` | The same config's `Svg` inside a **client component**, with no provider of its own |
+| `src/components/FramedSvg.tsx` | The custom renderer — a component, so it is the only file here that needs `"use client"` |
 
 ```sh
 npm install

@@ -1,5 +1,17 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## `@obelism/react-svg`
+
+The whole app runs on a **single config module**:
+
+| Where | What it covers |
+| --- | --- |
+| `app/svg-config.ts` | The whole configuration, in a server-safe module — `setupReactSvg` with a custom renderer, and no `"use client"` |
+| `app/layout.tsx` | `getSvgUrl` called during a **server** render for `preload()`, and the one `<SvgProvider />` the app has |
+| `app/page.tsx` | Every render type — including the custom one — rendered from a **server component** |
+| `app/client.tsx` | The same config's `Svg` inside a **client component**, with `onLoad` |
+| `app/ExternalLinkSvg.tsx` | The custom renderer — a component, so it is the only file here that needs `"use client"` |
+
 ## Getting Started
 
 First, run the development server:

@@ -1,24 +1,30 @@
-// No "use client" here on purpose: this module is imported by server
-// components. `setupReactSvg` creates nothing — it resolves the config and
-// narrows types — so it is safe to call from a server-safe module, and the
-// `getSvgUrl` it returns is a real function rather than a client reference.
+// The one config this app has. No "use client" here on purpose: this module is
+// imported by server and client components alike. `setupReactSvg` creates
+// nothing — it resolves the config and narrows types — so it is safe to call
+// from a server-safe module, and the `getSvgUrl` it returns is a real function
+// rather than a client reference.
 import setupReactSvg from "@obelism/react-svg"
+
+import { ExternalLinkSvg } from "./ExternalLinkSvg"
 
 export const SVG_MAP = {
 	vercel: { width: 283, height: 64, alt: "Vercel logo" },
 	next: { width: 394, height: 80, alt: "Next.js logo" },
 }
 
-// A distinct namespace: this config is rendered next to the one from
-// setupReactSvg() in app/Svg.tsx, and two providers sharing a namespace share
-// their <defs> ids.
 export const {
-	Svg: RscSvgComponent,
-	SvgProvider: RscSvgProvider,
+	Svg,
+	SvgProvider,
 	config: svgConfig,
 	getSvgUrl,
 } = setupReactSvg({
 	svgMap: SVG_MAP,
 	rootFolder: "/",
-	namespace: "_rsc",
+	// A renderer is a component, so it has to be client code — but only the
+	// renderer does. Naming one here keeps the config itself server-safe: the
+	// import is a client reference, and it crosses the boundary the way any
+	// other client component does.
+	svgRenderers: {
+		externalLink: ExternalLinkSvg,
+	},
 })

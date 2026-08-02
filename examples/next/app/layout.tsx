@@ -2,8 +2,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { preload } from "react-dom"
 import "./globals.css"
-import { SvgProvider } from "./Svg"
-import { getSvgUrl } from "./svg-config"
+import { getSvgUrl, SvgProvider, svgConfig } from "./svg-config"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,7 +25,9 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<SvgProvider>{children}</SvgProvider>
+				{/* One provider, at the root: every svg below it — server or
+				    client rendered — reads this config from context. */}
+				<SvgProvider config={svgConfig}>{children}</SvgProvider>
 			</body>
 		</html>
 	)

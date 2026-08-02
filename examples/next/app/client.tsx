@@ -1,7 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Svg } from "./Svg"
+
+// The same config module a server component imports — nothing here is a second
+// config, and no provider of its own is needed.
+import { Svg } from "./svg-config"
 
 export const VercelSvg = ({ className }: { className?: string }) => {
 	const [loaded, setLoaded] = useState(false)

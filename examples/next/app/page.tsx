@@ -1,7 +1,6 @@
 import { VercelSvg } from "./client"
 import styles from "./page.module.css"
-import { RscSvg } from "./RscSvg"
-import { Svg } from "./Svg"
+import { Svg } from "./svg-config"
 
 export default function Home() {
 	return (
@@ -23,11 +22,35 @@ export default function Home() {
 				</div>
 			</div>
 
+			{/* This is a server component: no "use client" wrapper of our own,
+			    no provider of its own. The svg keys and render types below are
+			    still typed against the config in app/svg-config.ts. */}
 			<div className={styles.center}>
-				<Svg className={styles.logo} svg="next" type="external" />
-				{/* A custom render type, declared in the client module that owns it */}
-				<Svg className={styles.logo} svg="next" type="externalLink" />
-				<RscSvg className={styles.logo} />
+				<Svg
+					className={styles.logo}
+					svg="next"
+					type="link"
+					data-testid="rsc-link"
+				/>
+				<Svg
+					className={styles.logo}
+					svg="next"
+					type="inline"
+					data-testid="rsc-inline"
+				/>
+				<Svg
+					className={styles.logo}
+					svg="next"
+					type="external"
+					data-testid="rsc-external"
+				/>
+				{/* A custom render type, from the same config */}
+				<Svg
+					className={styles.logo}
+					svg="next"
+					type="externalLink"
+					data-testid="rsc-custom"
+				/>
 			</div>
 
 			<div className={styles.grid}>
