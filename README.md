@@ -298,7 +298,24 @@ Only do this for a handful of critical, above-the-fold icons — preloading ever
 
 ### Types
 
-The package exports its own types — `SvgProps`, `SvgProviderProps`, `SvgEntry`, `SvgMap`, `SvgRenderer`, `SvgConfig`, and so on. Those are generic over your svg map though, so for the components bound to *your* configuration it's easiest to let Typescript read them off:
+The package exports its own types. That is the whole list:
+
+| Type | What it is |
+| --- | --- |
+| `SvgEntry` | One entry in your svg map — dimensions, and optionally a path and alt text |
+| `SvgMap` | The declared set of svgs, keyed by name |
+| `SvgOptions` | What you pass to `setupReactSvg` / `createSvgConfig`, before defaults |
+| `SvgConfig` | The resolved configuration, with defaults filled in |
+| `SvgProps` | `Svg`'s props |
+| `SvgComponentProps` | `SvgProps` plus the optional `config` prop, for [using `Svg` without a provider](#using-the-components-directly) |
+| `SvgProviderProps` | `SvgProvider`'s props |
+| `SvgRenderer` | A custom renderer component |
+| `SvgRendererProps` | What a renderer receives |
+| `SvgRenderMap` | A set of custom renderers, keyed by render type |
+| `SvgElement` / `SvgProviderElement` | `Svg` / `SvgProvider` narrowed to one svg map — what `setupReactSvg` hands back |
+| `GetSvgUrl` | The `getSvgUrl` returned by `setupReactSvg`, narrowed to one svg map |
+
+Those are generic over your svg map though, so for the components bound to *your* configuration it's easiest to let Typescript read them off:
 
 ```ts
 const { SvgProvider, Svg } = setupReactSvg({ ... });
@@ -438,19 +455,20 @@ A renderer is a component, so it has to be client code — but it can live in a 
 
 ### 5. Renamed and removed types
 
-`SvgConfig` used to mean a single entry in your svg map; it now means the whole resolved configuration. The per-entry type is `SvgEntry`.
+⚠️ **`SvgConfig` changed meaning.** In v2 it named a single entry in your svg map; in v3 it names the whole resolved configuration. The per-entry type is now `SvgEntry`. Code annotated `SvgConfig` still compiles against a different shape than you wrote it for, so check every use.
 
 | v2 | v3 |
 | --- | --- |
 | `SvgConfig` (one entry) | `SvgEntry` |
-| `ResolvedSvgConfig` | `SvgConfig` |
 | `SetupReactSvgArgs` | `SvgOptions` |
 | `svgData` prop on renderers | `entry` |
 | `folder` prop on renderers | `url`, already resolved |
 
 `SvgProviderProps` also lost its second type parameter — renderers come from the config now, not from props — so `SvgProviderProps<Map, RenderMap>` becomes `SvgProviderProps<Map>`.
 
-These exports are gone, all of them internals whose props were never a designed API: `BaseSvg`, `InlineSvg`, `LinkedSvg`, `SvgGroup`, `SvgImage` and their prop types, plus `getSvgId`, `formatSvgViewBox`, `SvgConfigContext`, `useSvgConfig` and `SvgElementArgs`. Custom renderers are handed everything they need as props, so there should be nothing to reach past `Svg` and `SvgProvider` for. If you were relying on one of them, please open an issue — the absence is deliberate, but the list can grow.
+Three exports are gone outright: `SvgElementArgs`, `SvgGroup` and `SvgGroupProps`. `SvgGroup` was a type, not a component — the component behind it was never exported.
+
+Everything else v2 exported is still exported. The internals v3 is built out of — the base element, the three render-type implementations, the group that fetches markup, the id and viewbox helpers, the config context and its hook — are new modules that were never part of the public surface, so there is nothing to migrate there. See [ADR-0003](docs/adr/0003-leaf-components-stay-internal.md) for why they stay internal. Custom renderers are handed everything they need as props, so there should be nothing to reach past `Svg` and `SvgProvider` for. If you were relying on something that is gone, please open an issue — the absence is deliberate, but the list can grow.
 
 ## Dependencies
 

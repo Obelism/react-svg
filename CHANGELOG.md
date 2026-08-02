@@ -28,18 +28,21 @@ See [Migrating to v3](./README.md#migrating-to-v3) for the upgrade.
   JavaScript silently ignores it: the namespace reverts to its default and every
   generated `<defs>` id changes, breaking anything that references those ids
   from outside the library. Grep for `idPrefix` before upgrading.
-- **Custom renderers must live in a `"use client"` module.** They are functions,
-  and functions cannot cross the server/client boundary as serialized data.
-- **Type renames.** `SvgConfig` now names the whole resolved configuration; a
-  single svg map entry is `SvgEntry`. `ResolvedSvgConfig` → `SvgConfig`,
-  `SetupReactSvgArgs` → `SvgOptions`. The renderer prop `svgData` → `entry`.
+- **Custom renderers must be client code.** A renderer is a component, so it
+  needs a `"use client"` module — but its own module is enough. The config that
+  imports it stays server-safe, which is what lets one config module serve an
+  entire RSC application.
+- **⚠️ `SvgConfig` changed meaning.** It named a single svg map entry in v2 and
+  names the whole resolved configuration in v3; the per-entry type is now
+  `SvgEntry`. Code annotated `SvgConfig` keeps compiling against a different
+  shape than it was written for.
+- **Type renames.** `SetupReactSvgArgs` → `SvgOptions`. The renderer prop
+  `svgData` → `entry`, and `folder` → `url`, already resolved.
 - **`SvgProviderProps` lost its second type parameter.** Renderers come from the
   config rather than from props, so `SvgProviderProps<Map, RenderMap>` becomes
   `SvgProviderProps<Map>`.
-- **Removed exports**, all internals whose props were never a designed API:
-  `BaseSvg`, `InlineSvg`, `LinkedSvg`, `SvgGroup`, `SvgImage` and their prop
-  types, plus `getSvgId`, `formatSvgViewBox`, `SvgConfigContext`, `useSvgConfig`
-  and `SvgElementArgs`.
+- **Removed exports:** `SvgElementArgs`, `SvgGroup` and `SvgGroupProps`.
+  `SvgGroup` was a type; the component behind it was never exported.
 
 ### Added
 

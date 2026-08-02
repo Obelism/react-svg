@@ -22,6 +22,13 @@ exports, re-typed to the caller's svg map, alongside the config object.
 - Renderers must be client components. The config crosses the boundary as
   serialized data, and React refuses plain functions there. This is inherent to
   the boundary, not something the library checks.
+
+  It does not follow that a config holding renderers must itself be client
+  code, which is how this was first read — both examples carried a config per
+  boundary because of it. A renderer declared in its own `"use client"` module
+  and imported into a server-safe config reaches it as a client reference, and
+  crosses like any other client component. One server-safe config module can
+  therefore serve a whole application, renderers included.
 - Rendering behaviour is unchanged: SVG content is still fetched and inserted
   on the client after hydration. Server-rendering the definitions block was
   considered and deliberately left out of scope.
