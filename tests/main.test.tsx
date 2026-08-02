@@ -295,6 +295,136 @@ describe("Svg / SvgProvider as plain components", () => {
 		cleanup()
 	})
 
+	/**
+	 * The hazard the README's `namespace` section documents. Two configs that
+	 * both omit `namespace` share the `_RI` default, so an svg name they have in
+	 * common is defined twice under one id.
+	 *
+	 * jsdom does not render `<use>`, so this pins the mechanism rather than the
+	 * paint: the duplicate id, and the `getElementById` lookup a browser performs
+	 * to resolve `href="#id"` — which returns the first match, for both of them.
+	 */
+	it("resolves both <use>s to one definition when two configs share a namespace and a key", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(async (url: string) => ({
+				text: async () => `<path data-url="${url}" />`,
+			})),
+		)
+
+		const brand = setupReactSvg({
+			rootFolder: "/brand",
+			svgMap: { logo: { width: 1, height: 1 } },
+		})
+		const docs = setupReactSvg({
+			rootFolder: "/docs",
+			svgMap: { logo: { width: 1, height: 1 } },
+		})
+
+		const { container } = render(
+			<>
+				<brand.SvgProvider config={brand.config}>
+					<brand.Svg svg="logo" type="link" />
+				</brand.SvgProvider>
+				<docs.SvgProvider config={docs.config}>
+					<docs.Svg svg="logo" type="link" />
+				</docs.SvgProvider>
+			</>,
+		)
+
+		await waitFor(() => {
+			expect(container.querySelectorAll("defs > g").length).toBe(2)
+		})
+
+		const definitions = [...container.querySelectorAll("defs > g")]
+
+		// Two definitions under one id, and both <use>s pointing at it.
+		expect(definitions.map((group) => group.id)).toEqual([
+			"_RI-logo",
+			"_RI-logo",
+		])
+		expect(
+			[...container.querySelectorAll("use")].map((use) =>
+				use.getAttribute("href"),
+			),
+		).toEqual(["#_RI-logo", "#_RI-logo"])
+
+		// They hold different markup — each fetched its own config's url.
+		expect(
+			definitions.map((group) =>
+				group.querySelector("path")?.getAttribute("data-url"),
+			),
+		).toEqual(["/brand/logo.svg", "/docs/logo.svg"])
+
+		// But the lookup resolves to the first, so the second config's svg
+		// renders as the first config's file. This is the silent failure.
+		expect(
+			document
+				.getElementById("_RI-logo")
+				?.querySelector("path")
+				?.getAttribute("data-url"),
+		).toBe("/brand/logo.svg")
+
+		vi.unstubAllGlobals()
+		cleanup()
+	})
+
+	it("keeps two configs apart when each names its own namespace", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(async (url: string) => ({
+				text: async () => `<path data-url="${url}" />`,
+			})),
+		)
+
+		const brand = setupReactSvg({
+			namespace: "_brand",
+			rootFolder: "/named-brand",
+			svgMap: { logo: { width: 1, height: 1 } },
+		})
+		const docs = setupReactSvg({
+			namespace: "_docs",
+			rootFolder: "/named-docs",
+			svgMap: { logo: { width: 1, height: 1 } },
+		})
+
+		const { container } = render(
+			<>
+				<brand.SvgProvider config={brand.config}>
+					<brand.Svg svg="logo" type="link" />
+				</brand.SvgProvider>
+				<docs.SvgProvider config={docs.config}>
+					<docs.Svg svg="logo" type="link" />
+				</docs.SvgProvider>
+			</>,
+		)
+
+		await waitFor(() => {
+			expect(container.querySelectorAll("defs > g").length).toBe(2)
+		})
+
+		expect(
+			[...container.querySelectorAll("defs > g")].map((group) => group.id),
+		).toEqual(["_brand-logo", "_docs-logo"])
+
+		// Each id now resolves to the markup of the config that defined it.
+		expect(
+			document
+				.getElementById("_brand-logo")
+				?.querySelector("path")
+				?.getAttribute("data-url"),
+		).toBe("/named-brand/logo.svg")
+		expect(
+			document
+				.getElementById("_docs-logo")
+				?.querySelector("path")
+				?.getAttribute("data-url"),
+		).toBe("/named-docs/logo.svg")
+
+		vi.unstubAllGlobals()
+		cleanup()
+	})
+
 	it("exports only the supported runtime surface", async () => {
 		const pkg = await import("../dist/index.mjs")
 
