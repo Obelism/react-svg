@@ -1,0 +1,12 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"rootDir": "..",
+		"noEmit": true,
+		"incremental": false,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false
+	},
+	"include": ["./**/*.test-d.tsx", "../dist/index.d.ts"],
+	"exclude": []
+}

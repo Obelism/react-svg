@@ -6,5 +6,11 @@ export default defineConfig({
 	plugins: [react()],
 	test: {
 		environment: "jsdom",
+		exclude: ["**/node_modules/**", "**/dist/**", "**/.claude/**"],
+		typecheck: {
+			enabled: true,
+			include: ["tests/**/*.test-d.tsx"],
+			tsconfig: "tests/tsconfig.json",
+		},
 	},
 })
