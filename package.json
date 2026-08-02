@@ -9,7 +9,7 @@
 		"cache"
 	],
 	"license": "MIT",
-	"version": "3.0.0-alpha.1",
+	"version": "3.0.0",
 	"author": "Obelism <hello@obelism.studio> (https://www.obelism.studio)",
 	"repository": {
 		"type": "git",
