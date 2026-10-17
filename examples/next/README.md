@@ -11,6 +11,8 @@ The whole app runs on a **single config module**:
 | `app/page.tsx` | Every render type — including the custom one — rendered from a **server component** |
 | `app/client.tsx` | The same config's `Svg` inside a **client component**, with `onLoad` |
 | `app/ExternalLinkSvg.tsx` | The custom renderer — a component, so it is the only file here that needs `"use client"` |
+| `app/stress/` | Pages of 50 to 2000 svgs per render type (`/stress`), on a config of their own, timing how long they take to settle |
+| `app/stress-svg/` | Generates the 2000 distinct svg files those pages link |
 
 ## Getting Started
 
