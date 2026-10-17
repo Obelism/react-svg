@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.0.1
+
+### Fixed
+
+- **Pages with hundreds of distinct linked svgs no longer stall.** Each
+  `type="link"` svg added itself to the linked set from a stale copy, so only
+  one svg joined per commit and every commit re-rendered every linked svg on
+  the page. Each one also subscribed to the whole set and deep-compared it on
+  every write. Under `next dev`, 250 distinct linked svgs took over two
+  minutes to settle; they now take under a second. No API changes.
+
 ## 3.0.0
 
 The library now owns its `"use client"` boundary. `setupReactSvg` no longer
