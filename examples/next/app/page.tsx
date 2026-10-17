@@ -54,6 +54,13 @@ export default function Home() {
 			</div>
 
 			<div className={styles.grid}>
+				<a href="/stress" className={styles.card}>
+					<h2>
+						Stress <span>-&gt;</span>
+					</h2>
+					<p>Pages of 50 to 2000 svgs, per render type, with timings.</p>
+				</a>
+
 				<a
 					href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
 					className={styles.card}

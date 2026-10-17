@@ -1,0 +1,54 @@
+.page {
+	max-width: var(--max-width);
+	margin: 0 auto;
+	padding: 3rem 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.page a {
+	text-decoration: underline;
+}
+
+.lead {
+	max-width: 65ch;
+	line-height: 1.5;
+}
+
+.table {
+	border-collapse: collapse;
+	font-family: var(--font-mono);
+	font-size: 0.85rem;
+}
+
+.table th,
+.table td {
+	padding: 0.4rem 0.75rem;
+	border: 1px solid rgba(var(--foreground-rgb), 0.15);
+	text-align: left;
+	white-space: nowrap;
+}
+
+.readout {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 2rem;
+	font-family: var(--font-mono);
+	font-size: 0.85rem;
+}
+
+.readout dt {
+	opacity: 0.6;
+}
+
+.grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.icon {
+	width: 24px;
+	height: 24px;
+}
