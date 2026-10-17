@@ -15,7 +15,6 @@
 		"rootDir": "./src",
 		"strict": true,
 		"target": "ES2018",
-		"baseUrl": "./src",
 		"noEmitOnError": true,
 		"incremental": true
 	},
