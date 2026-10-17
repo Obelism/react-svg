@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useMemo } from "react"
-import useSWR, { type KeyedMutator } from "swr"
+import useSWR, { type KeyedMutator, useSWRConfig } from "swr"
 
 import { getSvgId } from "../_shared/getSvgId"
 import { resolveSvgUrl } from "../_shared/resolveSvgUrl"
@@ -29,8 +29,11 @@ const SHARED_STATE_PREFIX = "obelism-react-svg"
 const EMPTY_SET: Record<string, boolean> = {}
 
 /** `namespace` scopes the set, so two configs in one app stay separate. */
+const getSetKey = (namespace: string) =>
+	`${SHARED_STATE_PREFIX}-${namespace}-linked`
+
 const useSet = (namespace: string) =>
-	useSharedState(`${SHARED_STATE_PREFIX}-${namespace}-linked`, EMPTY_SET)
+	useSharedState(getSetKey(namespace), EMPTY_SET)
 
 const useLoaded = (
 	namespace: string,
@@ -51,13 +54,23 @@ export type LinkedSvgEntry = {
  */
 export const useLinkedSvg = (svg: string) => {
 	const { namespace } = useSvgConfig()
-	const [set = EMPTY_SET, setSet] = useSet(namespace)
+	const { mutate } = useSWRConfig()
 	const [loaded] = useLoaded(namespace, svg)
 
-	const register = useCallback(() => {
-		if (set[svg]) return
-		return setSet({ ...set, [svg]: true })
-	}, [set, setSet, svg])
+	// Writes to the set without subscribing to it. A page can hold hundreds of
+	// linked svgs that all register in the same commit: subscribed, each write
+	// would make every one of them compare the whole set again, and merging from
+	// a set captured at render time would drop all but the last write.
+	const register = useCallback(
+		() =>
+			mutate<Record<string, boolean>>(
+				getSetKey(namespace),
+				(current = EMPTY_SET) =>
+					current[svg] ? current : { ...current, [svg]: true },
+				{ revalidate: false },
+			),
+		[mutate, namespace, svg],
+	)
 
 	return { id: getSvgId(namespace, svg), loaded: !!loaded, register }
 }
