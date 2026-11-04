@@ -532,7 +532,8 @@ describe("onLoad", () => {
 			vi.fn(
 				() =>
 					new Promise((resolve) => {
-						respond = (markup) => resolve({ text: async () => markup })
+						respond = (markup) =>
+							resolve({ ok: true, text: async () => markup })
 					}),
 			),
 		)
