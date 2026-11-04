@@ -504,7 +504,6 @@ describe("onLoad", () => {
 			</SvgProvider>,
 		)
 
-		await new Promise((resolve) => setTimeout(resolve, 20))
 		expect(onLoad).not.toHaveBeenCalled()
 
 		respond("<path/>")
@@ -534,6 +533,56 @@ describe("onLoad", () => {
 		rerender(tree)
 
 		expect(onLoad).toHaveBeenCalledTimes(1)
+	})
+
+	it("fires once for an inline render when onLoad changes identity every render", async () => {
+		const { Svg, SvgProvider, config } = makeConfig("inline-identity")
+		const onLoad = vi.fn()
+		const tree = () => (
+			<SvgProvider config={config}>
+				<Svg type="inline" svg="icon" onLoad={() => onLoad()} />
+			</SvgProvider>
+		)
+
+		const { rerender } = render(tree())
+		await waitFor(() => {
+			expect(onLoad).toHaveBeenCalledTimes(1)
+		})
+
+		rerender(tree())
+		rerender(tree())
+
+		expect(onLoad).toHaveBeenCalledTimes(1)
+	})
+
+	it("fires again when an inline render switches to another svg", async () => {
+		const { Svg, SvgProvider, config } = setupReactSvg({
+			namespace: "ns-inline-switch",
+			rootFolder: "/inline-switch",
+			svgMap: {
+				first: { width: 1, height: 1 },
+				second: { width: 1, height: 1 },
+			},
+		})
+		const onLoad = vi.fn()
+
+		const { rerender } = render(
+			<SvgProvider config={config}>
+				<Svg type="inline" svg="first" onLoad={onLoad} />
+			</SvgProvider>,
+		)
+		await waitFor(() => {
+			expect(onLoad).toHaveBeenCalledTimes(1)
+		})
+
+		rerender(
+			<SvgProvider config={config}>
+				<Svg type="inline" svg="second" onLoad={onLoad} />
+			</SvgProvider>,
+		)
+		await waitFor(() => {
+			expect(onLoad).toHaveBeenCalledTimes(2)
+		})
 	})
 
 	it("fires for a link render once the definitions block is populated", async () => {
