@@ -447,6 +447,24 @@ describe("Svg / SvgProvider as plain components", () => {
 		},
 	)
 
+	it.each(["inline", "link"] as const)(
+		"renders no empty <title> for a %s svg without alt text",
+		(type) => {
+			const config = createSvgConfig({
+				svgMap: { untitled: { width: 1, height: 1 } },
+				rootFolder: "/path/to",
+			})
+
+			const { container } = render(
+				<Svg type={type} svg="untitled" config={config} />,
+			)
+
+			expect(container.querySelector("svg[viewBox]")).not.toBeNull()
+			expect(container.querySelector("title")).toBeNull()
+			cleanup()
+		},
+	)
+
 	it("hides the definitions block without display: none", async () => {
 		vi.stubGlobal(
 			"fetch",
