@@ -1,5 +1,6 @@
 "use client"
 
+import type React from "react"
 import { memo } from "react"
 
 import {
@@ -8,6 +9,14 @@ import {
 	useMarkLinkedSvgLoaded,
 } from "../functions/useLinkedSet"
 import { SvgGroup } from "./SvgGroup"
+
+const HIDDEN_STYLE = Object.freeze({
+	position: "absolute",
+	width: 0,
+	height: 0,
+	overflow: "hidden",
+	pointerEvents: "none",
+}) satisfies React.CSSProperties
 
 /**
  * One definition: fetches a linked svg's markup and records its arrival with the
@@ -34,7 +43,14 @@ export const SvgDefinitions = memo(() => {
 	if (linkedSvgs.length === 0) return null
 
 	return (
-		<svg style={{ display: "none" }} aria-hidden="true">
+		<svg
+			width="0"
+			height="0"
+			// display: none makes browsers drop the gradients, masks and clip
+			// paths inside it that the referencing svgs point at.
+			style={HIDDEN_STYLE}
+			aria-hidden="true"
+		>
 			<defs>
 				{linkedSvgs.map((entry) => (
 					<SvgDefinition key={entry.key} entry={entry} />
