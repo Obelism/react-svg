@@ -425,6 +425,25 @@ describe("Svg / SvgProvider as plain components", () => {
 		cleanup()
 	})
 
+	it.each(["inline", "link"] as const)(
+		"renders a %s svg without xml:space",
+		(type) => {
+			const config = createSvgConfig({
+				svgMap: SVG_MAP,
+				rootFolder: "/path/to",
+			})
+
+			const { container } = render(
+				<Svg type={type} svg="icon" config={config} />,
+			)
+
+			const svg = container.querySelector("svg[viewBox]")
+			expect(svg).not.toBeNull()
+			expect(svg?.hasAttribute("xml:space")).toBe(false)
+			cleanup()
+		},
+	)
+
 	it("exports only the supported runtime surface", async () => {
 		const pkg = await import("../dist/index.mjs")
 
