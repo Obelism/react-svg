@@ -16,9 +16,9 @@ export type SvgGroupProps = {
  * Fetches the raw contents of one svg file and drops them into a `<g>`. Used
  * inline (inside a `<svg>`) and by the definitions block.
  *
- * Knows nothing but its url — not the svg config, not the linked set. The
- * definitions block passes `onLoaded`; an inline render passes nothing, so an
- * inline svg never reports a linked svg as loaded.
+ * Knows nothing but its url — not the svg config, not the linked set.
+ * `onLoaded` reports to whoever rendered it: the definitions block marks the
+ * linked svg loaded, an inline render calls its own `onLoad`.
  */
 export const SvgGroup = memo(({ url, onLoaded, ...rest }: SvgGroupProps) => {
 	const { data, error } = useSWR(url, svgFetcher, SWRConfig)

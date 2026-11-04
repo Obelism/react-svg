@@ -19,7 +19,7 @@ export const BaseSvg = ({ entry, alt, children, ...rest }: BaseSvgProps) => {
 
 	return (
 		// biome-ignore lint/a11y/noSvgWithoutTitle: title only when alt is set; consumers label or hide it via passed-through aria props
-		<svg {...rest} viewBox={formatSvgViewBox(entry)} xmlSpace="preserve">
+		<svg {...rest} viewBox={formatSvgViewBox(entry)}>
 			{title ? <title>{title}</title> : null}
 			{children}
 		</svg>

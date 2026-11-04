@@ -1,6 +1,6 @@
 "use client"
 
-import { memo, useEffect, useRef } from "react"
+import { memo, useCallback, useRef } from "react"
 
 import type { SvgMap, SvgRendererProps } from "../config/types"
 import { BaseSvg } from "./BaseSvg"
@@ -30,17 +30,22 @@ export const InlineSvg = memo(
 		loading: _loading,
 		...rest
 	}: InlineSvgProps) => {
-		const hasLoaded = useRef<boolean>(false)
+		// A ref keeps a new `onLoad` per render from breaking SvgGroup's memo. Set
+		// during render because SvgGroup's effect runs before any of ours.
+		const onLoadRef = useRef(onLoad)
+		onLoadRef.current = onLoad
 
-		useEffect(() => {
-			if (!onLoad || hasLoaded.current) return
-			hasLoaded.current = true
-			onLoad()
-		}, [onLoad])
+		const loadedUrl = useRef<string | null>(null)
+
+		const handleLoaded = useCallback(() => {
+			if (loadedUrl.current === url) return
+			loadedUrl.current = url
+			onLoadRef.current?.()
+		}, [url])
 
 		return (
 			<BaseSvg {...rest} entry={entry} alt={alt}>
-				<SvgGroup url={url} />
+				<SvgGroup url={url} onLoaded={handleLoaded} />
 			</BaseSvg>
 		)
 	},
