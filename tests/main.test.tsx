@@ -257,6 +257,7 @@ describe("Svg / SvgProvider as plain components", () => {
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async (url: string) => ({
+				ok: true,
 				text: async () => `<path data-url="${url}" />`,
 			})),
 		)
@@ -308,6 +309,7 @@ describe("Svg / SvgProvider as plain components", () => {
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async (url: string) => ({
+				ok: true,
 				text: async () => `<path data-url="${url}" />`,
 			})),
 		)
@@ -373,6 +375,7 @@ describe("Svg / SvgProvider as plain components", () => {
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async (url: string) => ({
+				ok: true,
 				text: async () => `<path data-url="${url}" />`,
 			})),
 		)
@@ -443,6 +446,43 @@ describe("Svg / SvgProvider as plain components", () => {
 		},
 	)
 
+	it("hides the definitions block without display: none", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(async () => ({ text: async () => "<path/>" })),
+		)
+
+		const { Svg, SvgProvider, config } = setupReactSvg({
+			namespace: "_hidden",
+			rootFolder: "/hidden",
+			svgMap: { icon: { width: 1, height: 1 } },
+		})
+
+		const { container } = render(
+			<SvgProvider config={config}>
+				<Svg svg="icon" type="link" />
+			</SvgProvider>,
+		)
+
+		await waitFor(() => {
+			expect(container.querySelector("defs")).not.toBeNull()
+		})
+
+		const block = container.querySelector("svg:has(> defs)") as SVGSVGElement
+		expect(block.style.display).not.toBe("none")
+		expect(block.style.position).toBe("absolute")
+		expect(block.style.overflow).toBe("hidden")
+		expect(block.style.width).toBe("0px")
+		expect(block.style.height).toBe("0px")
+		expect(block.style.pointerEvents).toBe("none")
+		expect(block.getAttribute("width")).toBe("0")
+		expect(block.getAttribute("height")).toBe("0")
+		expect(block.getAttribute("aria-hidden")).toBe("true")
+
+		vi.unstubAllGlobals()
+		cleanup()
+	})
+
 	it("exports only the supported runtime surface", async () => {
 		const pkg = await import("../dist/index.mjs")
 
@@ -478,7 +518,7 @@ describe("onLoad", () => {
 	beforeEach(() => {
 		vi.stubGlobal(
 			"fetch",
-			vi.fn(async () => ({ text: async () => "<path/>" })),
+			vi.fn(async () => ({ ok: true, text: async () => "<path/>" })),
 		)
 	})
 
@@ -562,6 +602,37 @@ describe("onLoad", () => {
 
 		expect(onLoad).toHaveBeenCalledTimes(1)
 	})
+
+	it.each(["inline", "link"] as const)(
+		"does not inject a failed response for a %s render",
+		async (type) => {
+			const { Svg, SvgProvider, config } = makeConfig(`not-found-${type}`)
+			const notFound = vi.fn(
+				async () =>
+					new Response("<html><body>Not found</body></html>", {
+						status: 404,
+						statusText: "Not Found",
+					}),
+			)
+			vi.stubGlobal("fetch", notFound)
+			const onLoad = vi.fn()
+
+			const { container } = render(
+				<SvgProvider config={config}>
+					<Svg type={type} svg="icon" onLoad={onLoad} />
+				</SvgProvider>,
+			)
+
+			await waitFor(() => {
+				expect(notFound).toHaveBeenCalledTimes(1)
+			})
+			await new Promise((resolve) => setTimeout(resolve, 20))
+
+			expect(container.innerHTML).not.toContain("Not found")
+			expect(container.querySelector("g")).toBeNull()
+			if (type === "link") expect(onLoad).not.toHaveBeenCalled()
+		},
+	)
 
 	// Pinning current behaviour, not endorsing it: an inline render both writes
 	// the linked set and fills the url-keyed cache, so a later link render of the
