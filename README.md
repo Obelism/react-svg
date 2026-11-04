@@ -120,7 +120,7 @@ This is the key/value store for all SVGs you want in your application. The provi
 - `height` {number} - Viewbox height of the SVG
 - `x` {number} - (optional) Horizontal start position of the SVG Viewbox
 - `y` {number} - (optional) Vertical start position of the SVG Viewbox
-- `alt` {string} - (optional) SVG alt text, can be left empty for decorative usage
+- `alt` {string} - (optional) SVG alt text, rendered as the `<title>` of `link` and `inline` svgs. Leave it empty for decorative usage: no `<title>` is rendered then, so pass `aria-hidden` to hide the svg from assistive tech
 
 #### rootFolder
 

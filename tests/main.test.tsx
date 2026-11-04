@@ -425,6 +425,24 @@ describe("Svg / SvgProvider as plain components", () => {
 		cleanup()
 	})
 
+	it.each(["inline", "link"] as const)(
+		"renders no empty <title> for a %s svg without alt text",
+		(type) => {
+			const config = createSvgConfig({
+				svgMap: { untitled: { width: 1, height: 1 } },
+				rootFolder: "/path/to",
+			})
+
+			const { container } = render(
+				<Svg type={type} svg="untitled" config={config} />,
+			)
+
+			expect(container.querySelector("svg[viewBox]")).not.toBeNull()
+			expect(container.querySelector("title")).toBeNull()
+			cleanup()
+		},
+	)
+
 	it("exports only the supported runtime surface", async () => {
 		const pkg = await import("../dist/index.mjs")
 
