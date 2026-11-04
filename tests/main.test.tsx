@@ -257,6 +257,7 @@ describe("Svg / SvgProvider as plain components", () => {
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async (url: string) => ({
+				ok: true,
 				text: async () => `<path data-url="${url}" />`,
 			})),
 		)
@@ -308,6 +309,7 @@ describe("Svg / SvgProvider as plain components", () => {
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async (url: string) => ({
+				ok: true,
 				text: async () => `<path data-url="${url}" />`,
 			})),
 		)
@@ -373,6 +375,7 @@ describe("Svg / SvgProvider as plain components", () => {
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async (url: string) => ({
+				ok: true,
 				text: async () => `<path data-url="${url}" />`,
 			})),
 		)
@@ -460,7 +463,7 @@ describe("onLoad", () => {
 	beforeEach(() => {
 		vi.stubGlobal(
 			"fetch",
-			vi.fn(async () => ({ text: async () => "<path/>" })),
+			vi.fn(async () => ({ ok: true, text: async () => "<path/>" })),
 		)
 	})
 
@@ -544,6 +547,37 @@ describe("onLoad", () => {
 
 		expect(onLoad).toHaveBeenCalledTimes(1)
 	})
+
+	it.each(["inline", "link"] as const)(
+		"does not inject a failed response for a %s render",
+		async (type) => {
+			const { Svg, SvgProvider, config } = makeConfig(`not-found-${type}`)
+			const notFound = vi.fn(
+				async () =>
+					new Response("<html><body>Not found</body></html>", {
+						status: 404,
+						statusText: "Not Found",
+					}),
+			)
+			vi.stubGlobal("fetch", notFound)
+			const onLoad = vi.fn()
+
+			const { container } = render(
+				<SvgProvider config={config}>
+					<Svg type={type} svg="icon" onLoad={onLoad} />
+				</SvgProvider>,
+			)
+
+			await waitFor(() => {
+				expect(notFound).toHaveBeenCalledTimes(1)
+			})
+			await new Promise((resolve) => setTimeout(resolve, 20))
+
+			expect(container.innerHTML).not.toContain("Not found")
+			expect(container.querySelector("g")).toBeNull()
+			if (type === "link") expect(onLoad).not.toHaveBeenCalled()
+		},
+	)
 
 	// Pinning current behaviour, not endorsing it: an inline render both writes
 	// the linked set and fills the url-keyed cache, so a later link render of the
