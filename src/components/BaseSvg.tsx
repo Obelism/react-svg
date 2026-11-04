@@ -15,7 +15,7 @@ export type BaseSvgProps = {
  * viewBox from the svg map and renders the alt text as a `<title>`.
  */
 export const BaseSvg = ({ entry, alt, children, ...rest }: BaseSvgProps) => (
-	<svg {...rest} viewBox={formatSvgViewBox(entry)} xmlSpace="preserve">
+	<svg {...rest} viewBox={formatSvgViewBox(entry)}>
 		<title>{alt || entry.alt}</title>
 		{children}
 	</svg>
