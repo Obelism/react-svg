@@ -18,7 +18,7 @@ The concept is to provide a minimal API to render SVGs without needing to conver
 
 - **Image**, it uses an image element to lazy load the SVG while provider the correct aspect ratio at all times. The most performant way of loading but doesn't give any context to the loaded SVG.
 - **Reference**, Using a global definition. This lazy loads the SVG in the provider and makes it possible to reference it in multiple places. This has the advantage of having the SVG in the DOM once and displaying it multiple times. This still works with contextual properties like; `fill: currentColor` in multiple places. A good middle ground between performance and control.
-- **Inline**, When specific parts of the SVG need to be controlled, nothing beats inlining the SVG. However with that comes the drawback that when
+- **Inline**, When specific parts of the SVG need to be controlled, nothing beats inlining the SVG. However, with that comes the drawback that when the same SVG is shown in multiple places, its full markup is added to the DOM once for every usage.
 
 ## Quick start
 
