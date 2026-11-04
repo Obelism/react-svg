@@ -9,6 +9,13 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
+    ignore:
+      # Tracks the Node major in .nvmrc.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+      # v7 bundles the pure helpers into a "use client" chunk; see tests/boundaries.test.ts.
+      - dependency-name: 'bunchee'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
