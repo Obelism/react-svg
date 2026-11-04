@@ -425,6 +425,43 @@ describe("Svg / SvgProvider as plain components", () => {
 		cleanup()
 	})
 
+	it("hides the definitions block without display: none", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(async () => ({ text: async () => "<path/>" })),
+		)
+
+		const { Svg, SvgProvider, config } = setupReactSvg({
+			namespace: "_hidden",
+			rootFolder: "/hidden",
+			svgMap: { icon: { width: 1, height: 1 } },
+		})
+
+		const { container } = render(
+			<SvgProvider config={config}>
+				<Svg svg="icon" type="link" />
+			</SvgProvider>,
+		)
+
+		await waitFor(() => {
+			expect(container.querySelector("defs")).not.toBeNull()
+		})
+
+		const block = container.querySelector("svg:has(> defs)") as SVGSVGElement
+		expect(block.style.display).not.toBe("none")
+		expect(block.style.position).toBe("absolute")
+		expect(block.style.overflow).toBe("hidden")
+		expect(block.style.width).toBe("0px")
+		expect(block.style.height).toBe("0px")
+		expect(block.style.pointerEvents).toBe("none")
+		expect(block.getAttribute("width")).toBe("0")
+		expect(block.getAttribute("height")).toBe("0")
+		expect(block.getAttribute("aria-hidden")).toBe("true")
+
+		vi.unstubAllGlobals()
+		cleanup()
+	})
+
 	it("exports only the supported runtime surface", async () => {
 		const pkg = await import("../dist/index.mjs")
 
