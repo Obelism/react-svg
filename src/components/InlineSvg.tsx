@@ -1,6 +1,6 @@
 "use client"
 
-import { memo, useEffect, useRef } from "react"
+import { memo, useCallback, useRef } from "react"
 
 import type { SvgMap, SvgRendererProps } from "../config/types"
 import { BaseSvg } from "./BaseSvg"
@@ -32,7 +32,7 @@ export const InlineSvg = memo(
 	}: InlineSvgProps) => {
 		const hasLoaded = useRef<boolean>(false)
 
-		useEffect(() => {
+		const handleLoaded = useCallback(() => {
 			if (!onLoad || hasLoaded.current) return
 			hasLoaded.current = true
 			onLoad()
@@ -40,7 +40,7 @@ export const InlineSvg = memo(
 
 		return (
 			<BaseSvg {...rest} entry={entry} alt={alt}>
-				<SvgGroup url={url} />
+				<SvgGroup url={url} onLoaded={handleLoaded} />
 			</BaseSvg>
 		)
 	},

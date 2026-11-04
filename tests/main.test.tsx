@@ -484,6 +484,37 @@ describe("onLoad", () => {
 		})
 	})
 
+	it("fires for an inline render only once its markup has arrived", async () => {
+		const { Svg, SvgProvider, config } = makeConfig("inline-deferred")
+		let respond: (markup: string) => void = () => {}
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(
+				() =>
+					new Promise((resolve) => {
+						respond = (markup) => resolve({ text: async () => markup })
+					}),
+			),
+		)
+		const onLoad = vi.fn()
+
+		const { container } = render(
+			<SvgProvider config={config}>
+				<Svg type="inline" svg="icon" onLoad={onLoad} />
+			</SvgProvider>,
+		)
+
+		await new Promise((resolve) => setTimeout(resolve, 20))
+		expect(onLoad).not.toHaveBeenCalled()
+
+		respond("<path/>")
+
+		await waitFor(() => {
+			expect(onLoad).toHaveBeenCalledTimes(1)
+		})
+		expect(container.querySelector("svg > g > path")).not.toBeNull()
+	})
+
 	it("fires once for an inline render, not on every render", async () => {
 		const { Svg, SvgProvider, config } = makeConfig("inline-once")
 		const onLoad = vi.fn()
