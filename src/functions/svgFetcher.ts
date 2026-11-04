@@ -12,7 +12,7 @@ export class SvgFetchError extends Error {
  * Throws on a non-2xx response, so an error page is never injected as svg
  * markup.
  */
-export const svgFetcher = async (path: string) => {
+export const svgFetcher = async (path: string): Promise<string> => {
 	const res = await fetch(path)
 
 	if (!res.ok) throw new SvgFetchError(path, res.status, res.statusText)
@@ -20,6 +20,10 @@ export const svgFetcher = async (path: string) => {
 	return await res.text()
 }
 
-/** A 4xx won't change on retry; network errors and 5xx might. */
-export const shouldRetrySvgFetch = (error: Error) =>
-	!(error instanceof SvgFetchError && error.status < 500)
+const TRANSIENT_CLIENT_ERRORS = new Set([408, 429])
+
+/** Most 4xx won't change on retry; network errors, 5xx, 408 and 429 might. */
+export const shouldRetrySvgFetch = (error: Error): boolean =>
+	!(error instanceof SvgFetchError) ||
+	error.status >= 500 ||
+	TRANSIENT_CLIENT_ERRORS.has(error.status)
