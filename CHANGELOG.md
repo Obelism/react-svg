@@ -1,5 +1,31 @@
 # Changelog
 
+## 3.0.2
+
+### Fixed
+
+- **A failed svg request is no longer injected as markup.** When an svg
+  returned a 404 or any other non-2xx response, the body of the error page was
+  inserted into the definitions block or the inline svg. Failed svgs now stay
+  empty, and a linked svg's `onLoad` doesn't fire. Most 4xx responses are not
+  retried. Network errors, 5xx, 408 and 429 still are.
+- **Gradients, masks and clip paths work in linked svgs.** The definitions
+  block was hidden with `display: none`, and browsers then drop the paint
+  servers inside it. It is now hidden by giving it zero size and absolute
+  positioning, with no pointer events.
+- **An inline svg's `onLoad` fires once its markup has arrived.** It used to
+  fire on mount, before the svg was fetched. It fires again if the same `<Svg>`
+  switches to another svg, and passing a new `onLoad` on every render no
+  longer matters.
+- **No empty `<title>`.** An svg without alt text, from its svg map entry or
+  the `alt` prop, now renders no `<title>` at all. Pass `aria-hidden` to hide
+  a decorative svg from assistive tech.
+- **`xml:space="preserve"` is no longer set** on rendered svgs. ⚠️ The attribute
+  was inherited by the svg's contents, so an svg whose `<text>` depends on runs
+  of spaces or line breaks must now declare `xml:space="preserve"` (or
+  `white-space: pre`) itself. Svgs made only of shapes are unaffected, and most
+  exported files that contain text declare it already.
+
 ## 3.0.1
 
 ### Fixed
